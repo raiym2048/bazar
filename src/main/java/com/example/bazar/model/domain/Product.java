@@ -22,7 +22,6 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private List<Like> likes;
     @OneToMany(mappedBy = "product")
-    @JoinColumn(name = "comments", referencedColumnName = "id")
     private List<Comment> comments;
     @OneToMany(mappedBy = "product")
     private List<Favorite> favorites;
