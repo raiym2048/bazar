@@ -136,11 +136,7 @@ public class ProductServiceImpl implements ProductService{
         List<ImageData> imageDataList = new ArrayList<>();
         for (MultipartFile file : files) {
             ImageData imageData = null;
-            try {
-                imageData = imageService.uploadImage(file);
-            } catch (IOException e) {
-                log.info("Pro");
-            }
+            imageData = imageService.uploadImage(file);
             imageDataList.add(imageData);
         }
         product.setImageData(imageDataList);
