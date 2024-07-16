@@ -27,7 +27,7 @@ public class AuthMapperImpl implements AuthMapper {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(encoder.encode(request.getPassword()));
-        user.setRole(Role.CLIENT);
+        user.setRole(Role.CUSTOMER);
         return user;
     }
 }
