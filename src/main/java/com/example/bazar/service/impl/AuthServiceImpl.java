@@ -34,7 +34,6 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.save(authMapper.toUserDto(request));
         return authMapper.toDto(user);
     }
-
     @Override
     public AuthResponse login(LoginRequest loginRequest) {
         authenticationManager.authenticate(

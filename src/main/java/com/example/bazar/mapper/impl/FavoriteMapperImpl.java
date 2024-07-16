@@ -1,20 +1,17 @@
 package com.example.bazar.mapper.impl;
 
 import com.example.bazar.mapper.FavoriteMapper;
-import com.example.bazar.model.domain.Favorite;
-import com.example.bazar.model.domain.Like;
-import com.example.bazar.model.domain.Product;
-import com.example.bazar.model.domain.User;
+import com.example.bazar.model.domain.*;
 import org.springframework.stereotype.Component;
 
 @Component
 public class FavoriteMapperImpl  implements FavoriteMapper {
 
     @Override
-    public Favorite toDto(Product product, User user) {
+    public Favorite toDto(Product product, Customer user) {
         Favorite favorite = new Favorite();
         favorite.setProduct(product);
-        favorite.setUser(user);
+        favorite.setCustomer(user);
         return favorite;
     }
 }

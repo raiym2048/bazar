@@ -11,11 +11,12 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
-@Table(name = "sellers")
-public class Seller extends User{
-    private String address;
-    private String phoneNumber;
-    private String companyName;
+@Table(name = "customers")
+public class Customer extends User{
     @OneToMany
-    private List<Product> products;
+    private List<Like> likes;
+    @OneToMany
+    private List<Favorite> favorites;
+    @OneToMany
+    private List<Comment> comments;
 }
