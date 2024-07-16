@@ -3,6 +3,7 @@ package com.example.bazar.model.domain;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +17,13 @@ public class Seller extends User{
     private String address;
     private String phoneNumber;
     private String companyName;
-    @OneToMany
+  
+    @OneToOne
+    @JoinColumn(name = "image_name", referencedColumnName = "name")
+    private ImageData imageData;
+    @OneToMany(mappedBy = "seller")
     private List<Product> products;
+    @OneToOne
+    @JoinColumn(name = "system_id", referencedColumnName = "id")
+    private User user;
 }
