@@ -5,19 +5,25 @@ import com.example.bazar.mapper.CommentMapper;
 import com.example.bazar.mapper.FavoriteMapper;
 import com.example.bazar.mapper.LikeMapper;
 import com.example.bazar.model.domain.*;
+import com.example.bazar.model.dto.product.ProductRequest;
 import com.example.bazar.repository.*;
 import com.example.bazar.service.AuthService;
+import com.example.bazar.service.ImageService;
 import com.example.bazar.service.ProductService;
 import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.text.translate.NumericEntityUnescaper;
-import org.apache.coyote.BadRequestException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ProductServiceImpl implements ProductService{
     private final ProductRepository productRepository;
     private final AuthService authService;
@@ -28,6 +34,7 @@ public class ProductServiceImpl implements ProductService{
     private final LikeMapper likeMapper;
     private final FavoriteMapper favoriteMapper;
     private final CommentMapper commentMapper;
+    private final ImageService imageService;
 
     @Override
     public void addLike(Long productId, String token) {
@@ -118,5 +125,21 @@ public class ProductServiceImpl implements ProductService{
             throw new CustomException("You can't delete this comment", HttpStatus.FORBIDDEN);
         }
         commentRepository.delete(comment);
+    }
+
+    @Override
+    public void create(ProductRequest request, List<MultipartFile> files) {
+        User user = userRepository.findByEmail(request.getSellerEmail()).orElseThrow(() -> new CustomException("Seller not found", HttpStatus.NOT_FOUND));
+        Product product = new Product();
+        product.setSeller(user.getSeller());
+        product.setDescription(request.getDescription());
+        List<ImageData> imageDataList = new ArrayList<>();
+        for (MultipartFile file : files) {
+            ImageData imageData = null;
+            imageData = imageService.uploadImage(file);
+            imageDataList.add(imageData);
+        }
+        product.setImageData(imageDataList);
+        productRepository.save(product);
     }
 }

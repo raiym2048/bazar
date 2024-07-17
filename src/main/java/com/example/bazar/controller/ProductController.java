@@ -1,9 +1,13 @@
 package com.example.bazar.controller;
 
+import com.example.bazar.model.dto.product.ProductRequest;
 import com.example.bazar.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -39,5 +43,10 @@ public class ProductController {
     public ResponseEntity<?> removeComment(@PathVariable Long commentId, @RequestHeader("Authorization")String token) {
         productService.removeComment(commentId, token);
         return ResponseEntity.ok("Comment removed successfully");
+    }
+
+    @PostMapping("/create")
+    public void create(@RequestBody ProductRequest request, @RequestParam List<MultipartFile> files) {
+        productService.create(request, files);
     }
 }
