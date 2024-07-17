@@ -1,6 +1,7 @@
 package com.example.bazar.service;
 
 import com.example.bazar.model.dto.product.ProductRequest;
+import com.example.bazar.model.dto.product.ProductResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -15,4 +16,6 @@ public interface ProductService {
     void removeComment(Long commentId , String token);
 
     void create(ProductRequest request, List<MultipartFile> files);
+
+    List<ProductResponse> all();
 }

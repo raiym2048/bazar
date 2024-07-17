@@ -4,8 +4,10 @@ import com.example.bazar.exception.CustomException;
 import com.example.bazar.mapper.CommentMapper;
 import com.example.bazar.mapper.FavoriteMapper;
 import com.example.bazar.mapper.LikeMapper;
+import com.example.bazar.mapper.ProductMapper;
 import com.example.bazar.model.domain.*;
 import com.example.bazar.model.dto.product.ProductRequest;
+import com.example.bazar.model.dto.product.ProductResponse;
 import com.example.bazar.repository.*;
 import com.example.bazar.service.AuthService;
 import com.example.bazar.service.ImageService;
@@ -35,6 +37,7 @@ public class ProductServiceImpl implements ProductService{
     private final FavoriteMapper favoriteMapper;
     private final CommentMapper commentMapper;
     private final ImageService imageService;
+    private final ProductMapper productMapper;
 
     @Override
     public void addLike(Long productId, String token) {
@@ -141,5 +144,10 @@ public class ProductServiceImpl implements ProductService{
         }
         product.setImageData(imageDataList);
         productRepository.save(product);
+    }
+
+    @Override
+    public List<ProductResponse> all() {
+        return productMapper.toResponseList(productRepository.findAll());
     }
 }
