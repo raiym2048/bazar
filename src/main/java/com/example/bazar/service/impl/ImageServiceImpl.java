@@ -4,77 +4,67 @@ import com.example.bazar.exception.CustomException;
 import com.example.bazar.model.domain.ImageData;
 import com.example.bazar.repository.ImageDataRepository;
 import com.example.bazar.service.ImageService;
-import lombok.AllArgsConstructor;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
+import java.nio.file.Files;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class ImageServiceImpl implements ImageService {
     private final ImageDataRepository imageDataRepository;
+    @Value("${file.system.path}")
+    private String filePath;
 
     @Override
     public ImageData uploadImage(MultipartFile file) {
         ImageData imageData = new ImageData();
-        String imageName = System.currentTimeMillis() + file.getOriginalFilename();
+        String imageName = System.currentTimeMillis() + "_" + file.getOriginalFilename().replaceAll("\\s+", "_");
         imageData.setName(imageName);
-        imageData.setPath("localhost:2020/image/" + imageName);
+        imageData.setType(file.getContentType());
+        String fullPath = filePath + imageName;
+        imageData.setPath(fullPath);
+
         try {
-            imageData.setImageData(compressImage(file.getBytes()));
+            file.transferTo(new File(fullPath));
         } catch (IOException e) {
-            log.info("Error during compressing the image: {}", e.getMessage());
+            log.debug("File transfer failed: {}", e.getMessage());
+            throw new CustomException("File transfer failed: " + e.getMessage(), HttpStatus.EXPECTATION_FAILED);
         }
-        imageDataRepository.save(imageData);
-        return imageData;
+
+        return imageDataRepository.save(imageData);
+    }
+
+
+    @Override
+    @Transactional
+    public byte[] downloadImage(String name) {
+        ImageData imageData = imageDataRepository.findByName(name).orElseThrow(() -> new CustomException("Image not found", HttpStatus.NOT_FOUND));
+        String filePath = imageData.getPath();
+        byte[] image;
+        try {
+            image = Files.readAllBytes(new File(filePath).toPath());
+        } catch (IOException e) {
+            log.debug("Reading the file is failed: {}", e.getMessage());
+            throw new CustomException(e.getMessage(), HttpStatus.BAD_GATEWAY);
+        }
+        return image;
     }
 
     @Override
-    public byte[] downloadImage(String name) {
-        ImageData imageData = imageDataRepository.findByName(name).orElseThrow(() -> new CustomException("Image not found", HttpStatus.NOT_FOUND));
-        return decompressImage(imageData.getImageData());
-    }
-
-    public static byte[] compressImage(byte[] image) {
-        Deflater deflater = new Deflater();
-        deflater.setLevel(Deflater.BEST_COMPRESSION);
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(image.length);
-        byte[] tmp = new byte[4*1024];
-        while (!deflater.finished()) {
-            int size = deflater.deflate(tmp);
-            outputStream.write(tmp, 0, size);
+    @Transactional
+    public void delete(String name) {
+        if (imageDataRepository.findByName(name).isEmpty()) {
+            throw new CustomException("Image not found", HttpStatus.NOT_FOUND);
         }
-
-        try {
-            outputStream.close();
-        } catch (Exception e) {
-            log.info("Error writing the image: {}", e.getMessage());
-        }
-        return outputStream.toByteArray();
-    }
-
-    public static byte[] decompressImage(byte[] image) {
-        Inflater inflater = new Inflater();
-        inflater.setInput(image);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(image.length);
-        byte[] tmp = new byte[4*1024];
-        try {
-            while (!inflater.finished()) {
-                int count = inflater.inflate(tmp);
-                outputStream.write(tmp, 0, count);
-            }
-            outputStream.close();
-        } catch (Exception e) {
-            log.info("Error writing the image: {}", e.getMessage());
-        }
-        return outputStream.toByteArray();
+        imageDataRepository.deleteByName(name);
     }
 }

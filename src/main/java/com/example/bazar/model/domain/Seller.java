@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "sellers")
-public class Seller extends User{
+public class Seller extends User {
     private String address;
     private String phoneNumber;
     private String companyName;

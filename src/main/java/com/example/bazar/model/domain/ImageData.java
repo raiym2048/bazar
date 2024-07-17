@@ -14,10 +14,8 @@ public class ImageData {
 
     @Column(unique = true)
     private String name;
+    private String type;
     private String path;
-
-    @Lob
-    private byte[] imageData;
 
     @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "id")
