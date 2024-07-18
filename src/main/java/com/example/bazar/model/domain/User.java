@@ -23,10 +23,14 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @Column(unique = true)
     private String email;
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToOne(mappedBy = "user")
+    private Seller seller;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -6,6 +6,8 @@ import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.List;
 
+import java.util.List;
+
 @Entity
 @Data
 @Table(name = "products")
@@ -15,11 +17,22 @@ public class Product {
     private Long id ;
 
     private String name;
-    private String description;
     private String price;
     @OneToMany
     private List<Like> likes;
     @OneToMany
     private List<Comment> comments;
+    @Lob
+    private String description;
 
+    @OneToMany(mappedBy = "product")
+    private List<ImageData> imageData;
+    @ManyToOne
+    private Seller seller;
+    @OneToMany(mappedBy = "product")
+    private List<Like> likes;
+    @OneToMany(mappedBy = "product")
+    private List<Comment> comments;
+    @OneToMany(mappedBy = "product")
+    private List<Favorite> favorites;
 }
