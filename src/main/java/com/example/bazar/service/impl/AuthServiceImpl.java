@@ -2,10 +2,12 @@ package com.example.bazar.service.impl;
 
 import com.example.bazar.exception.CustomException;
 import com.example.bazar.mapper.AuthMapper;
+import com.example.bazar.model.domain.Customer;
 import com.example.bazar.model.domain.User;
 import com.example.bazar.model.dto.auth.AuthResponse;
 import com.example.bazar.model.dto.auth.LoginRequest;
 import com.example.bazar.model.dto.auth.RegisterRequest;
+import com.example.bazar.repository.CustomerRepository;
 import com.example.bazar.repository.UserRepository;
 import com.example.bazar.service.AuthService;
 import lombok.AllArgsConstructor;
@@ -26,15 +28,21 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final AuthMapper authMapper;
     private final AuthenticationManager authenticationManager;
+    private final CustomerRepository customerRepository;
     @Override
     public AuthResponse register(RegisterRequest request) {
         if(userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new CustomException("User with this email is already exist", HttpStatus.FOUND);
         }
-        User user = userRepository.save(authMapper.toUserDto(request));
+        User user = authMapper.toUserDto(request);
+        Customer customer = new Customer(
+                request.getName(),
+                request.getEmail(),
+                request.getPassword()
+        );
+        customerRepository.saveAndFlush(customer);
         return authMapper.toDto(user);
     }
-
     @Override
     public AuthResponse login(LoginRequest loginRequest) {
         authenticationManager.authenticate(
