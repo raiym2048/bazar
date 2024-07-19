@@ -17,7 +17,7 @@ import java.util.List;
 @Table(name = "customers")
 @PrimaryKeyJoinColumn(name = "id")
 @NoArgsConstructor
-public class Customer extends User{
+public class Customer extends User {
     @OneToMany
     private List<Like> likes;
     @OneToMany

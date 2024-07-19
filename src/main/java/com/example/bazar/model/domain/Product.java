@@ -17,12 +17,7 @@ public class Product {
     private Long id ;
 
     private String name;
-    private String price;
-    @OneToMany
-    private List<Like> likes;
-    @OneToMany
-    private List<Comment> comments;
-    @Lob
+    private double price;
     private String description;
 
     @OneToMany(mappedBy = "product")

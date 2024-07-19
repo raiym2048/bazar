@@ -26,7 +26,6 @@ public class Seller extends User {
     private ImageData imageData;
     @OneToMany(mappedBy = "seller")
     private List<Product> products;
-
     public Seller(String name, String email, String password) {
         super(name, email, password, Role.SELLER);
     }

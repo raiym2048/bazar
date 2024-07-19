@@ -1,10 +1,13 @@
 package com.example.bazar.service.impl;
 
+import com.example.bazar.config.JwtService;
 import com.example.bazar.exception.CustomException;
 import com.example.bazar.mapper.CommentMapper;
 import com.example.bazar.mapper.FavoriteMapper;
 import com.example.bazar.mapper.LikeMapper;
+import com.example.bazar.mapper.ProductMapper;
 import com.example.bazar.model.domain.*;
+import com.example.bazar.model.dto.product.ProductDetailResponse;
 import com.example.bazar.model.dto.product.ProductRequest;
 import com.example.bazar.repository.*;
 import com.example.bazar.service.AuthService;
@@ -20,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -27,8 +31,9 @@ import java.util.Optional;
 @Slf4j
 public class ProductServiceImpl implements ProductService{
     private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
+    private final SellerRepository sellerRepository;
     private final AuthService authService;
-    private final UserRepository userRepository;
     private final LikeRepository likeRepository;
     private final FavoriteRepository favoriteRepository;
     private final CommentRepository commentRepository;
@@ -138,11 +143,12 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public void create(ProductRequest request, List<MultipartFile> files) {
-        User user = userRepository.findByEmail(request.getSellerEmail()).orElseThrow(() -> new CustomException("Seller not found", HttpStatus.NOT_FOUND));
+    public void create(ProductRequest request, List<MultipartFile> files, String token) {
+
+        User user = authService.getUserFromToken(token);
+        Seller seller = sellerRepository.findById(user.getId()).orElseThrow(() -> new CustomException("Internal server error", HttpStatus.BAD_GATEWAY));
         Product product = new Product();
-        product.setSeller(user.getSeller());
-        product.setDescription(request.getDescription());
+        product.setSeller(seller);
         List<ImageData> imageDataList = new ArrayList<>();
         for (MultipartFile file : files) {
             ImageData imageData = null;
@@ -150,6 +156,12 @@ public class ProductServiceImpl implements ProductService{
             imageDataList.add(imageData);
         }
         product.setImageData(imageDataList);
-        productRepository.save(product);
+        productRepository.save(productMapper.toProduct(product, request));
+    }
+
+    @Override
+    public ProductDetailResponse getDetail(Long id) {
+//        if ()
+        return null;
     }
 }
