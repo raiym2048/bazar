@@ -6,6 +6,7 @@ import com.example.bazar.model.domain.Product;
 import com.example.bazar.model.dto.product.ProductDetailResponse;
 import com.example.bazar.model.dto.product.ProductRequest;
 import com.example.bazar.model.dto.product.ProductResponse;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -21,13 +22,27 @@ public class ProductMapperImpl implements ProductMapper {
         for (ImageData imageData : product.getImageData()) {
             imagePaths.add(imageData.getPath());
         }
+        response.setName(product.getName());
+        response.setPrice(product.getPrice());
         response.setImagePaths(imagePaths);
         response.setDescription(product.getDescription());
         response.setSellerName(product.getSeller().getName());
-        response.setSellerImagePath(product.getSeller().getImageData().getPath());
-        response.setLikes(product.getLikes().size());
+        if (product.getSeller().getImageData() != null) {
+            response.setSellerImagePath(product.getSeller().getImageData().getPath());
+        } else {
+            response.setSellerImagePath(null);
+        }
+        if (product.getLikes() != null) {
+            response.setLikes(product.getLikes().size());
+        } else {
+            response.setLikes(0);
+        }
         // response.setComments(); // todo: here should be the pagination
-        response.setFavorites(product.getFavorites().size());
+        if (product.getFavorites() != null) {
+            response.setFavorites(product.getFavorites().size());
+        } else {
+            response.setFavorites(0);
+        }
         return response;
     }
 
@@ -49,7 +64,6 @@ public class ProductMapperImpl implements ProductMapper {
         product.setName(request.getName());
         product.setPrice(request.getPrice());
         product.setDescription(request.getDescription());
-        System.out.println("It's the desc of the product: " + product.getDescription());
         return product;
     }
 }

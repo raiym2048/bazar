@@ -6,11 +6,13 @@ import java.util.List;
 
 @Data
 public class ProductDetailResponse {
+    private String name;
+    private double price;
     private List<String> imagePaths;
     private String description;
     private String sellerName;
     private String sellerImagePath;
-    private int likes;
+    private Integer likes;
     private List<String> comments;
-    private int favorites;
+    private Integer favorites;
 }
