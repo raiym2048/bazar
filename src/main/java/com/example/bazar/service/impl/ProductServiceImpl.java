@@ -7,24 +7,28 @@ import com.example.bazar.mapper.FavoriteMapper;
 import com.example.bazar.mapper.LikeMapper;
 import com.example.bazar.mapper.ProductMapper;
 import com.example.bazar.model.domain.*;
+import com.example.bazar.model.dto.product.CommentResponse;
 import com.example.bazar.model.dto.product.ProductDetailResponse;
 import com.example.bazar.model.dto.product.ProductRequest;
+import com.example.bazar.model.dto.product.ProductResponse;
 import com.example.bazar.repository.*;
 import com.example.bazar.service.AuthService;
 import com.example.bazar.service.ImageService;
 import com.example.bazar.service.ProductService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Pageable;
 
-import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -45,102 +49,48 @@ public class ProductServiceImpl implements ProductService{
     private final ImageDataRepository imageDataRepository;
 
     @Override
-    public void addLike(Long productId, String token) {
-        Optional<Product> productOptional = productRepository.findById(productId);
-        if(productOptional.isEmpty()){
-            throw new CustomException("Product with id "+productId+" not found" , HttpStatus.NOT_FOUND);
-        }
+    public void likeProduct(String token, Long productId) {
         User user = authService.getUserFromToken(token);
-        Customer customer = customerRepository.findById(user.getId())
-                .orElseThrow(() -> new CustomException("User with id " + user.getId() + " not found", HttpStatus.NOT_FOUND));
-        if(likeRepository.existsByProduct(productOptional.get())){
-            throw new CustomException("You already liked this product", HttpStatus.BAD_REQUEST);
+        Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
+
+        Optional<Like> existingLike = likeRepository.findByUserAndProduct(user, product);
+        if (existingLike.isPresent()) {
+            likeRepository.delete(existingLike.get());
+        } else {
+            Like like = new Like();
+            like.setUser(user);
+            like.setProduct(product);
+            likeRepository.save(like);
         }
-        Like like = likeMapper.toLikeDto(productOptional.get(), customer);
-        likeRepository.save(like);
-    }
-    @Override
-    public void removeLike(Long productId, String token) {
-        Optional<Product> productOptional = productRepository.findById(productId);
-        if(productOptional.isEmpty()){
-            throw new CustomException("Product with id "+productId+" not found" , HttpStatus.NOT_FOUND);
-        }
-        User user = authService.getUserFromToken(token);
-        if(likeRepository.existsByProduct(productOptional.get())){
-            throw new CustomException("You already liked this product", HttpStatus.BAD_REQUEST);
-        }
-        Like like = likeRepository.findByProduct(productOptional.get())
-                .orElseThrow(() -> new CustomException("Like not found for product id " + productId, HttpStatus.NOT_FOUND));
-        likeRepository.delete(like);
     }
 
     @Override
-    public void addFavorite(Long productId, String token) {
-        Optional<Product> productOptional = productRepository.findById(productId);
-        if(productOptional.isEmpty()){
-            throw new CustomException("Product with id "+productId+" not found" , HttpStatus.NOT_FOUND);
-        }
+    public void addFavorite(String token, Long productId) {
         User user = authService.getUserFromToken(token);
-        Customer customer = customerRepository.findById(user.getId())
-                .orElseThrow(() -> new CustomException("User with id " + user.getId() + " not found", HttpStatus.NOT_FOUND));
-        if(likeRepository.existsByProduct(productOptional.get())){
-            throw new CustomException("You already liked this product", HttpStatus.BAD_REQUEST);
+        Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
+
+        Optional<Favorite> existingFavorite = favoriteRepository.findByUserAndProduct(user, product);
+        if (existingFavorite.isPresent()) {
+            favoriteRepository.delete(existingFavorite.get());
+        } else {
+            Favorite favorite = new Favorite();
+            favorite.setUser(user);
+            favorite.setProduct(product);
+            favoriteRepository.save(favorite);
         }
-        if (favoriteRepository.existsByProductAndCustomer(productOptional.get(), customer)) {
-            throw new CustomException("Product is already in user's favorites" , HttpStatus.BAD_REQUEST);
-        }
-        Favorite favorite = favoriteMapper.toDto(productOptional.get(), customer);
-        favoriteRepository.save(favorite);
     }
 
     @Override
-    public void removeFavorite(Long productId,String token) {
-        Optional<Product> productOptional = productRepository.findById(productId);
-        if(productOptional.isEmpty()){
-            throw new CustomException("Product with id "+productId+" not found" , HttpStatus.NOT_FOUND);
-        }
+    public void addComment(String token, Long productId, String content) {
         User user = authService.getUserFromToken(token);
-        Customer customer = customerRepository.findById(user.getId())
-                .orElseThrow(() -> new CustomException("User with id " + user.getId() + " not found", HttpStatus.NOT_FOUND));
-        if(likeRepository.existsByProduct(productOptional.get())){
-            throw new CustomException("You already liked this product", HttpStatus.BAD_REQUEST);
-        }
-        if (!favoriteRepository.existsByProductAndCustomer(productOptional.get(), customer)) {
-            throw new CustomException("Product is not in user's favorites" , HttpStatus.BAD_REQUEST);
-        }
-        Favorite favorite = favoriteRepository.findByProductAndCustomer(productOptional.get(), customer)
-                .orElseThrow(() -> new CustomException("Favorite not found for product id " + productId + " and user id " + user.getId(), HttpStatus.NOT_FOUND));
-        favoriteRepository.delete(favorite);
-    }
+        Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
 
-    @Override
-    public void addComment(Long productId, String token, String text) {
-        Optional<Product> productOptional = productRepository.findById(productId);
-        if(productOptional.isEmpty()){
-            throw new CustomException("Product with id "+productId+" not found" , HttpStatus.NOT_FOUND);
-        }
-        User user = authService.getUserFromToken(token);
-        Customer customer = customerRepository.findById(user.getId())
-                .orElseThrow(() -> new CustomException("User with id " + user.getId() + " not found", HttpStatus.NOT_FOUND));
-        if(likeRepository.existsByProduct(productOptional.get())){
-            throw new CustomException("You already liked this product", HttpStatus.BAD_REQUEST);
-        }
-        if(text.isEmpty()){
-            throw new CustomException("Comment text can't be empty", HttpStatus.BAD_REQUEST);
-        }
-        Comment comment = commentMapper.toDtoComment(productOptional.get(), customer, text);
+        Comment comment = new Comment();
+        comment.setContent(content);
+        comment.setUser(user);
+        comment.setProduct(product);
+        comment.setCreatedAt(LocalDateTime.now());
         commentRepository.save(comment);
-    }
-
-    @Override
-    public void removeComment(Long commentId , String token) {
-        User user = authService.getUserFromToken(token);
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CustomException("Comment with id " + commentId + " not found", HttpStatus.NOT_FOUND));
-        if(comment.getCustomer().getId() != user.getId()){
-            throw new CustomException("You can't delete this comment", HttpStatus.FORBIDDEN);
-        }
-        commentRepository.delete(comment);
     }
 
     @Override
@@ -169,5 +119,27 @@ public class ProductServiceImpl implements ProductService{
             throw new CustomException("Seller not found", HttpStatus.NOT_FOUND);
         }
         return productMapper.toDetailResponse(product);
+    }
+
+    @Override
+    public List<ProductResponse> getAll(int offset, int pageSize) {
+        Page<Product> products = productRepository.findAll(PageRequest.of(offset, pageSize));
+        return productMapper.toResponseList(products.stream().toList());
+    }
+
+    @Override
+    public List<CommentResponse> getComments(Long productId, int offset, int pageSize) {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
+        Pageable pageable = PageRequest.of(offset, pageSize);
+
+        return commentRepository.findByProduct(product, pageable).stream()
+                .map(comment -> {
+                    CommentResponse response = new CommentResponse();
+                    response.setUserName(comment.getUser().getName());
+                    response.setContent(comment.getContent());
+                    response.setCreatedAt(comment.getCreatedAt());
+                    return response;
+                })
+                .collect(Collectors.toList());
     }
 }

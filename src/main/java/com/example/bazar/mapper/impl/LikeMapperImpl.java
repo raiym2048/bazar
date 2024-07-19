@@ -11,12 +11,4 @@ import org.springframework.stereotype.Component;
 @Component
 
 public class LikeMapperImpl implements LikeMapper {
-
-    @Override
-    public Like toLikeDto(Product product, Customer user) {
-        Like like = new Like();
-        like.setProduct(product);
-        like.setCustomer(user);
-        return like;
-    }
 }

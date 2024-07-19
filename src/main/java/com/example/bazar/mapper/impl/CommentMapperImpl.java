@@ -9,12 +9,4 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CommentMapperImpl implements CommentMapper {
-    @Override
-    public Comment toDtoComment(Product product, Customer user, String text) {
-        Comment comment = new Comment();
-        comment.setProduct(product);
-        comment.setCustomer(user);
-        comment.setText(text);
-        return comment;
-    }
 }

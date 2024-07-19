@@ -13,6 +13,5 @@ public class ProductDetailResponse {
     private String sellerName;
     private String sellerImagePath;
     private Integer likes;
-    private List<String> comments;
     private Integer favorites;
 }
