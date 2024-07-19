@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @AllArgsConstructor
@@ -46,7 +47,9 @@ public class ProductController {
     }
 
     @PostMapping("/create")
-    public void create(@RequestBody ProductRequest request, @RequestParam List<MultipartFile> files) {
-        productService.create(request, files);
+    public void create(@RequestPart(value = "files", required = false) List<MultipartFile> files,
+                       @RequestPart(value = "request") ProductRequest request,
+                       @RequestHeader("Authorization") String token) {
+        productService.create(request, files, token);
     }
 }

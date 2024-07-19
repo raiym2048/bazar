@@ -2,6 +2,7 @@ package com.example.bazar.mapper.impl;
 
 import com.example.bazar.config.JwtService;
 import com.example.bazar.mapper.AuthMapper;
+import com.example.bazar.model.domain.Seller;
 import com.example.bazar.model.domain.User;
 import com.example.bazar.model.dto.auth.AuthResponse;
 import com.example.bazar.model.dto.auth.RegisterRequest;
@@ -27,7 +28,16 @@ public class AuthMapperImpl implements AuthMapper {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(encoder.encode(request.getPassword()));
-        user.setRole(Role.CLIENT);
+        user.setRole(Role.CUSTOMER);
         return user;
+    }
+
+    @Override
+    public Seller toSeller(User user) {
+        Seller seller = new Seller();
+        seller.setName(user.getName());
+        seller.setEmail(user.getEmail());
+        seller.setPassword(user.getPassword());
+        return seller;
     }
 }

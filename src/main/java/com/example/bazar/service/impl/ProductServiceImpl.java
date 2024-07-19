@@ -1,16 +1,20 @@
 package com.example.bazar.service.impl;
 
+import com.example.bazar.config.JwtService;
 import com.example.bazar.exception.CustomException;
 import com.example.bazar.mapper.CommentMapper;
 import com.example.bazar.mapper.FavoriteMapper;
 import com.example.bazar.mapper.LikeMapper;
+import com.example.bazar.mapper.ProductMapper;
 import com.example.bazar.model.domain.*;
+import com.example.bazar.model.dto.product.ProductDetailResponse;
 import com.example.bazar.model.dto.product.ProductRequest;
 import com.example.bazar.repository.*;
 import com.example.bazar.service.AuthService;
 import com.example.bazar.service.ImageService;
 import com.example.bazar.service.ProductService;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -26,14 +31,16 @@ import java.util.Optional;
 @Slf4j
 public class ProductServiceImpl implements ProductService{
     private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
+    private final SellerRepository sellerRepository;
     private final AuthService authService;
-    private final UserRepository userRepository;
     private final LikeRepository likeRepository;
     private final FavoriteRepository favoriteRepository;
     private final CommentRepository commentRepository;
     private final LikeMapper likeMapper;
     private final FavoriteMapper favoriteMapper;
     private final CommentMapper commentMapper;
+    private final CustomerRepository customerRepository;
     private final ImageService imageService;
 
     @Override
@@ -43,10 +50,12 @@ public class ProductServiceImpl implements ProductService{
             throw new CustomException("Product with id "+productId+" not found" , HttpStatus.NOT_FOUND);
         }
         User user = authService.getUserFromToken(token);
-        if(likeRepository.existsByProductAndUser(productOptional.get(), user)){
+        Customer customer = customerRepository.findById(user.getId())
+                .orElseThrow(() -> new CustomException("User with id " + user.getId() + " not found", HttpStatus.NOT_FOUND));
+        if(likeRepository.existsByProduct(productOptional.get())){
             throw new CustomException("You already liked this product", HttpStatus.BAD_REQUEST);
         }
-        Like like = likeMapper.toLikeDto(productOptional.get(), user);
+        Like like = likeMapper.toLikeDto(productOptional.get(), customer);
         likeRepository.save(like);
     }
     @Override
@@ -56,11 +65,11 @@ public class ProductServiceImpl implements ProductService{
             throw new CustomException("Product with id "+productId+" not found" , HttpStatus.NOT_FOUND);
         }
         User user = authService.getUserFromToken(token);
-        if(likeRepository.existsByProductAndUser(productOptional.get(), user)){
+        if(likeRepository.existsByProduct(productOptional.get())){
             throw new CustomException("You already liked this product", HttpStatus.BAD_REQUEST);
         }
-        Like like = likeRepository.findByProductAndUser(productOptional.get(), user)
-                .orElseThrow(() -> new CustomException("Like not found for product id " + productId + " and user id " + user.getId(), HttpStatus.NOT_FOUND));
+        Like like = likeRepository.findByProduct(productOptional.get())
+                .orElseThrow(() -> new CustomException("Like not found for product id " + productId, HttpStatus.NOT_FOUND));
         likeRepository.delete(like);
     }
 
@@ -71,13 +80,15 @@ public class ProductServiceImpl implements ProductService{
             throw new CustomException("Product with id "+productId+" not found" , HttpStatus.NOT_FOUND);
         }
         User user = authService.getUserFromToken(token);
-        if(likeRepository.existsByProductAndUser(productOptional.get(), user)){
+        Customer customer = customerRepository.findById(user.getId())
+                .orElseThrow(() -> new CustomException("User with id " + user.getId() + " not found", HttpStatus.NOT_FOUND));
+        if(likeRepository.existsByProduct(productOptional.get())){
             throw new CustomException("You already liked this product", HttpStatus.BAD_REQUEST);
         }
-        if (favoriteRepository.existsByProductAndUser(productOptional.get(), user)) {
+        if (favoriteRepository.existsByProductAndCustomer(productOptional.get(), customer)) {
             throw new CustomException("Product is already in user's favorites" , HttpStatus.BAD_REQUEST);
         }
-        Favorite favorite = favoriteMapper.toDto(productOptional.get(), user);
+        Favorite favorite = favoriteMapper.toDto(productOptional.get(), customer);
         favoriteRepository.save(favorite);
     }
 
@@ -88,13 +99,15 @@ public class ProductServiceImpl implements ProductService{
             throw new CustomException("Product with id "+productId+" not found" , HttpStatus.NOT_FOUND);
         }
         User user = authService.getUserFromToken(token);
-        if(likeRepository.existsByProductAndUser(productOptional.get(), user)){
+        Customer customer = customerRepository.findById(user.getId())
+                .orElseThrow(() -> new CustomException("User with id " + user.getId() + " not found", HttpStatus.NOT_FOUND));
+        if(likeRepository.existsByProduct(productOptional.get())){
             throw new CustomException("You already liked this product", HttpStatus.BAD_REQUEST);
         }
-        if (!favoriteRepository.existsByProductAndUser(productOptional.get(), user)) {
+        if (!favoriteRepository.existsByProductAndCustomer(productOptional.get(), customer)) {
             throw new CustomException("Product is not in user's favorites" , HttpStatus.BAD_REQUEST);
         }
-        Favorite favorite = favoriteRepository.findByProductAndUser(productOptional.get(), user)
+        Favorite favorite = favoriteRepository.findByProductAndCustomer(productOptional.get(), customer)
                 .orElseThrow(() -> new CustomException("Favorite not found for product id " + productId + " and user id " + user.getId(), HttpStatus.NOT_FOUND));
         favoriteRepository.delete(favorite);
     }
@@ -106,13 +119,15 @@ public class ProductServiceImpl implements ProductService{
             throw new CustomException("Product with id "+productId+" not found" , HttpStatus.NOT_FOUND);
         }
         User user = authService.getUserFromToken(token);
-        if(likeRepository.existsByProductAndUser(productOptional.get(), user)){
+        Customer customer = customerRepository.findById(user.getId())
+                .orElseThrow(() -> new CustomException("User with id " + user.getId() + " not found", HttpStatus.NOT_FOUND));
+        if(likeRepository.existsByProduct(productOptional.get())){
             throw new CustomException("You already liked this product", HttpStatus.BAD_REQUEST);
         }
         if(text.isEmpty()){
             throw new CustomException("Comment text can't be empty", HttpStatus.BAD_REQUEST);
         }
-        Comment comment = commentMapper.toDtoComment(productOptional.get(), user, text);
+        Comment comment = commentMapper.toDtoComment(productOptional.get(), customer, text);
         commentRepository.save(comment);
     }
 
@@ -121,18 +136,19 @@ public class ProductServiceImpl implements ProductService{
         User user = authService.getUserFromToken(token);
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException("Comment with id " + commentId + " not found", HttpStatus.NOT_FOUND));
-        if(comment.getUser().getId() != user.getId()){
+        if(comment.getCustomer().getId() != user.getId()){
             throw new CustomException("You can't delete this comment", HttpStatus.FORBIDDEN);
         }
         commentRepository.delete(comment);
     }
 
     @Override
-    public void create(ProductRequest request, List<MultipartFile> files) {
-        User user = userRepository.findByEmail(request.getSellerEmail()).orElseThrow(() -> new CustomException("Seller not found", HttpStatus.NOT_FOUND));
+    public void create(ProductRequest request, List<MultipartFile> files, String token) {
+
+        User user = authService.getUserFromToken(token);
+        Seller seller = sellerRepository.findById(user.getId()).orElseThrow(() -> new CustomException("Internal server error", HttpStatus.BAD_GATEWAY));
         Product product = new Product();
-        product.setSeller(user.getSeller());
-        product.setDescription(request.getDescription());
+        product.setSeller(seller);
         List<ImageData> imageDataList = new ArrayList<>();
         for (MultipartFile file : files) {
             ImageData imageData = null;
@@ -140,6 +156,12 @@ public class ProductServiceImpl implements ProductService{
             imageDataList.add(imageData);
         }
         product.setImageData(imageDataList);
-        productRepository.save(product);
+        productRepository.save(productMapper.toProduct(product, request));
+    }
+
+    @Override
+    public ProductDetailResponse getDetail(Long id) {
+//        if ()
+        return null;
     }
 }

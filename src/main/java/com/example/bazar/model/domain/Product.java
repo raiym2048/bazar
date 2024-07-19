@@ -2,6 +2,9 @@ package com.example.bazar.model.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.w3c.dom.stylesheets.LinkStyle;
+
+import java.util.List;
 
 import java.util.List;
 
@@ -12,7 +15,9 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id ;
-    @Lob
+
+    private String name;
+    private double price;
     private String description;
 
     @OneToMany(mappedBy = "product")
