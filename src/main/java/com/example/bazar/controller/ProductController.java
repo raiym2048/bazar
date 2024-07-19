@@ -1,7 +1,9 @@
 package com.example.bazar.controller;
 
+import com.example.bazar.model.dto.product.CommentResponse;
 import com.example.bazar.model.dto.product.ProductDetailResponse;
 import com.example.bazar.model.dto.product.ProductRequest;
+import com.example.bazar.model.dto.product.ProductResponse;
 import com.example.bazar.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,40 +18,24 @@ import java.util.Map;
 @RequestMapping("/product")
 public class ProductController {
     private final ProductService productService;
+
     @PostMapping("/like/{productId}")
-    public ResponseEntity<?> likeProduct(@PathVariable Long productId, @RequestHeader("Authorization")String token) {
-        productService.addLike(productId, token);
-        return ResponseEntity.ok("Product liked");
-    }
-    @DeleteMapping("/unlike/{productId}")
-    public ResponseEntity<?> dislikeProduct(@PathVariable Long productId, @RequestHeader("Authorization")String token) {
-        productService.removeLike(productId, token);
-        return ResponseEntity.ok("Product unlike");
+    public void likeProduct(@RequestHeader("Authorization") String token, @PathVariable Long productId) {
+        productService.likeProduct(token, productId);
     }
     @PostMapping("/favorite/{productId}")
-    public ResponseEntity<?> addFavorite(@PathVariable Long productId, @RequestHeader("Authorization")String token) {
-        productService.addFavorite(productId, token);
-        return ResponseEntity.ok("Post added to favorites successfully");
+    public void addFavorite(@RequestHeader("Authorization") String token, @PathVariable Long productId) {
+        productService.addFavorite(token, productId);
     }
-    @DeleteMapping("/unfavorite/{productId}")
-    public ResponseEntity<?> removeFavorite(@PathVariable Long productId, @RequestHeader("Authorization")String token) {
-        productService.removeFavorite(productId, token);
-        return ResponseEntity.ok("Post removed from favorites successfully");
-    }
+
     @PostMapping("/comment/{productId}")
-    public ResponseEntity<?> addComment(@PathVariable Long productId, @RequestHeader("Authorization")String token, @RequestBody String text) {
-        productService.addComment(productId, token, text);
-        return ResponseEntity.ok("Comment added successfully");
-    }
-    @DeleteMapping("/uncomment/{commentId}")
-    public ResponseEntity<?> removeComment(@PathVariable Long commentId, @RequestHeader("Authorization")String token) {
-        productService.removeComment(commentId, token);
-        return ResponseEntity.ok("Comment removed successfully");
+    public void addComment(@RequestHeader("Authorization") String token, @PathVariable Long productId, @RequestParam String content) {
+        productService.addComment(token, productId, content);
     }
 
     @PostMapping("/create")
-    public void create(@RequestPart(value = "files", required = false) List<MultipartFile> files,
-                       @RequestPart(value = "request") ProductRequest request,
+    public void create(@RequestPart(value = "request") ProductRequest request,
+                       @RequestPart(value = "files", required = false) List<MultipartFile> files,
                        @RequestHeader("Authorization") String token) {
         productService.create(request, files, token);
     }
@@ -57,5 +43,18 @@ public class ProductController {
     @GetMapping("/detail/{id}")
     public ProductDetailResponse getDetail(@PathVariable Long id) {
         return productService.getDetail(id);
+    }
+
+    @GetMapping("/all")
+    public List<ProductResponse> getAll(@RequestParam(defaultValue = "0") int offset,
+                                        @RequestParam(defaultValue = "10") int pageSize) {
+        return productService.getAll(offset, pageSize);
+    }
+
+    @GetMapping("/comments/{productId}")
+    public List<CommentResponse> getComments(@PathVariable Long productId,
+                                             @RequestParam(defaultValue = "0") int offset,
+                                             @RequestParam(defaultValue = "10") int pageSize) {
+        return productService.getComments(productId, offset, pageSize);
     }
 }

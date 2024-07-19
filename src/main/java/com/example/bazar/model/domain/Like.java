@@ -14,9 +14,10 @@ public class Like implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id ;
-    private boolean liked;
     @ManyToOne
-    private Customer customer;
+    @JoinColumn(name = "user_id")
+    private User user;
     @ManyToOne
+    @JoinColumn
     private Product product;
 }

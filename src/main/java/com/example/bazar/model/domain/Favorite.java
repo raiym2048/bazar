@@ -15,7 +15,9 @@ public class Favorite implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    private Customer customer;
+    @JoinColumn(name = "user_id")
+    private User user;
     @ManyToOne
+    @JoinColumn
     private Product product;
 }

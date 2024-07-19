@@ -37,7 +37,6 @@ public class ProductMapperImpl implements ProductMapper {
         } else {
             response.setLikes(0);
         }
-        // response.setComments(); // todo: here should be the pagination
         if (product.getFavorites() != null) {
             response.setFavorites(product.getFavorites().size());
         } else {
@@ -49,14 +48,21 @@ public class ProductMapperImpl implements ProductMapper {
     @Override
     public ProductResponse toResponse(Product product) {
         ProductResponse response = new ProductResponse();
-        response.setImagePath(product.getImageData().get(0).getPath());
+        if (product.getImageData() != null) {
+            response.setImagePath(product.getImageData().get(0).getPath());
+        } else {
+            response.setImagePath(null);
+        }
         return response;
     }
 
     @Override
     public List<ProductResponse> toResponseList(List<Product> products) {
-
-        return null;
+        List<ProductResponse> responses = new ArrayList<>();
+        for (Product product : products) {
+            responses.add(toResponse(product));
+        }
+        return responses;
     }
 
     @Override

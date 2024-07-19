@@ -1,5 +1,6 @@
 package com.example.bazar.repository;
 
+import com.example.bazar.model.domain.Customer;
 import com.example.bazar.model.domain.Like;
 import com.example.bazar.model.domain.Product;
 import com.example.bazar.model.domain.User;
@@ -10,6 +11,5 @@ import java.util.Optional;
 
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Long> {
-    boolean existsByProduct(Product product);
-    Optional<Like> findByProduct(Product product);
+    Optional<Like> findByUserAndProduct(User user, Product product);
 }
