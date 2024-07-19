@@ -1,5 +1,6 @@
 package com.example.bazar.controller;
 
+import com.example.bazar.model.dto.product.ProductDetailResponse;
 import com.example.bazar.model.dto.product.ProductRequest;
 import com.example.bazar.service.ProductService;
 import lombok.AllArgsConstructor;
@@ -51,5 +52,10 @@ public class ProductController {
                        @RequestPart(value = "request") ProductRequest request,
                        @RequestHeader("Authorization") String token) {
         productService.create(request, files, token);
+    }
+
+    @GetMapping("/detail/{id}")
+    public ProductDetailResponse getDetail(@PathVariable Long id) {
+        return productService.getDetail(id);
     }
 }

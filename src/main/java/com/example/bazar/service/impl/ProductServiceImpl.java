@@ -42,6 +42,7 @@ public class ProductServiceImpl implements ProductService{
     private final CommentMapper commentMapper;
     private final CustomerRepository customerRepository;
     private final ImageService imageService;
+    private final ImageDataRepository imageDataRepository;
 
     @Override
     public void addLike(Long productId, String token) {
@@ -144,24 +145,29 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public void create(ProductRequest request, List<MultipartFile> files, String token) {
-
         User user = authService.getUserFromToken(token);
         Seller seller = sellerRepository.findById(user.getId()).orElseThrow(() -> new CustomException("Internal server error", HttpStatus.BAD_GATEWAY));
         Product product = new Product();
         product.setSeller(seller);
+        Product savedProduct = productRepository.save(product);
         List<ImageData> imageDataList = new ArrayList<>();
         for (MultipartFile file : files) {
             ImageData imageData = null;
             imageData = imageService.uploadImage(file);
+            imageData.setProduct(savedProduct);
+            imageDataRepository.save(imageData);
             imageDataList.add(imageData);
         }
-        product.setImageData(imageDataList);
-        productRepository.save(productMapper.toProduct(product, request));
+        savedProduct.setImageData(imageDataList);
+        productRepository.save(productMapper.toProduct(savedProduct, request));
     }
 
     @Override
     public ProductDetailResponse getDetail(Long id) {
-//        if ()
-        return null;
+        Product product = productRepository.findById(id).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
+        if (product.getSeller() == null) {
+            throw new CustomException("Seller not found", HttpStatus.NOT_FOUND);
+        }
+        return productMapper.toDetailResponse(product);
     }
 }
