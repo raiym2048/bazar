@@ -1,4 +1,4 @@
-package com.example.bazar.model.dto;
+package com.example.bazar.model.dto.product;
 
 import lombok.Data;
 
