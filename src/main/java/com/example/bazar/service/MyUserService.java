@@ -8,5 +8,4 @@ import java.util.List;
 public interface MyUserService {
     List<UserResponse> all(int offset, int pageSize);
     UserResponse getById(Long id);
-
 }
