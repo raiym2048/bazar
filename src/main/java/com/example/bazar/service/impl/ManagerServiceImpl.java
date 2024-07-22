@@ -2,7 +2,6 @@ package com.example.bazar.service.impl;
 
 import com.example.bazar.exception.CustomException;
 import com.example.bazar.mapper.ManagerMapper;
-import com.example.bazar.model.domain.Manager;
 import com.example.bazar.model.domain.User;
 import com.example.bazar.model.dto.manager.ManagerResponse;
 import com.example.bazar.repository.ManagerRepository;
@@ -14,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -27,7 +27,7 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public ManagerResponse getById(Long id) {
+    public ManagerResponse getById(UUID id) {
         return managerMapper.toResponse(managerRepository.findById(id).orElseThrow(() -> new CustomException("Manager not found", HttpStatus.NOT_FOUND)));
     }
 

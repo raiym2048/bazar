@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -21,7 +22,7 @@ public class ManagerController {
     }
 
     @GetMapping("/{id}")
-    public ManagerResponse getById(@PathVariable Long id) {
+    public ManagerResponse getById(@PathVariable UUID id) {
         return service.getById(id);
     }
 

@@ -7,14 +7,15 @@ import org.w3c.dom.stylesheets.LinkStyle;
 import java.util.List;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
 @Table(name = "products")
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id ;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id ;
 
     private String name;
     private double price;

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 
 @Entity
@@ -11,8 +12,8 @@ import java.time.LocalDateTime;
 @Table(name = "comments")
 public class Comment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id ;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
     private String content;
     private LocalDateTime createdAt;
 

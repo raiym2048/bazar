@@ -6,14 +6,15 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Entity
 @Data
 @Table(name = "favorites")
 public class Favorite implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

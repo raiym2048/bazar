@@ -1,6 +1,5 @@
 package com.example.bazar.service.impl;
 
-import com.example.bazar.config.JwtService;
 import com.example.bazar.exception.CustomException;
 import com.example.bazar.mapper.CommentMapper;
 import com.example.bazar.mapper.FavoriteMapper;
@@ -28,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,7 +49,7 @@ public class ProductServiceImpl implements ProductService{
     private final ImageDataRepository imageDataRepository;
 
     @Override
-    public void likeProduct(String token, Long productId) {
+    public void likeProduct(String token, UUID productId) {
         User user = authService.getUserFromToken(token);
         Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
 
@@ -65,7 +65,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public void addFavorite(String token, Long productId) {
+    public void addFavorite(String token, UUID productId) {
         User user = authService.getUserFromToken(token);
         Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
 
@@ -81,7 +81,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public void addComment(String token, Long productId, String content) {
+    public void addComment(String token, UUID productId, String content) {
         User user = authService.getUserFromToken(token);
         Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
 
@@ -113,7 +113,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public ProductDetailResponse getDetail(Long id) {
+    public ProductDetailResponse getDetail(UUID id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
         if (product.getSeller() == null) {
             throw new CustomException("Seller not found", HttpStatus.NOT_FOUND);
@@ -128,7 +128,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public List<CommentResponse> getComments(Long productId, int offset, int pageSize) {
+    public List<CommentResponse> getComments(UUID productId, int offset, int pageSize) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
         Pageable pageable = PageRequest.of(offset, pageSize);
 
