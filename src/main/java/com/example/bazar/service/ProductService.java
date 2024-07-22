@@ -4,19 +4,17 @@ import com.example.bazar.model.dto.product.CommentResponse;
 import com.example.bazar.model.dto.product.ProductDetailResponse;
 import com.example.bazar.model.dto.product.ProductRequest;
 import com.example.bazar.model.dto.product.ProductResponse;
-import org.hibernate.query.Page;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
 public interface ProductService {
-    void likeProduct(String token, Long productId);
-    void addFavorite(String token, Long productId);
-    void addComment(String token, Long productId, String content);
+    void likeProduct(String token, UUID productId);
+    void addFavorite(String token, UUID productId);
+    void addComment(String token, UUID productId, String content);
     void create(ProductRequest request, List<MultipartFile> files, String token);
-    ProductDetailResponse getDetail(Long id);
+    ProductDetailResponse getDetail(UUID id);
     List<ProductResponse> getAll(int offset, int pageSize);
-    List<CommentResponse> getComments(Long productId, int offset, int pageSize);
+    List<CommentResponse> getComments(UUID productId, int offset, int pageSize);
 }

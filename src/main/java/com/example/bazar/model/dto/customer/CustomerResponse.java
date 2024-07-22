@@ -2,9 +2,11 @@ package com.example.bazar.model.dto.customer;
 
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class CustomerResponse {
-    private Long id;
+    private UUID id;
     private String name;
     private String email;
 }

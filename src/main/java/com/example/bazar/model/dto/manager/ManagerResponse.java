@@ -3,10 +3,11 @@ package com.example.bazar.model.dto.manager;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 public class ManagerResponse {
-    private Long id;
+    private UUID id;
     private String name;
     private String surname;
     private String email;

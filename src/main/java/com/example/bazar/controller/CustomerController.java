@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -21,7 +22,7 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public CustomerResponse findById(@PathVariable Long id) {
+    public CustomerResponse findById(@PathVariable UUID id) {
         return service.findById(id);
     }
 
