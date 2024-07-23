@@ -2,15 +2,10 @@ package com.example.bazar.model.dto.seller;
 
 import lombok.Data;
 
-import java.util.UUID;
-
 @Data
-public class SellerResponse {
-    private UUID id;
+public class SellerRequest {
     private String name;
     private String email;
-    private String address;
     private String phoneNumber;
     private String companyName;
-    private String image;
 }
