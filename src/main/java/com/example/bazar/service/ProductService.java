@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ProductService {
-    void likeProduct(String token, UUID productId);
-    void addFavorite(String token, UUID productId);
+    boolean likeProduct(String token, UUID productId);
+    boolean addFavorite(String token, UUID productId);
     void addComment(String token, UUID productId, String content);
-    void create(ProductRequest request, List<MultipartFile> files, String token);
+    ProductDetailResponse create(ProductRequest request, List<MultipartFile> files, String token);
     ProductDetailResponse getDetail(UUID id);
     List<ProductResponse> getAll(int offset, int pageSize);
     List<CommentResponse> getComments(UUID productId, int offset, int pageSize);

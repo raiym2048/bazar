@@ -17,6 +17,7 @@ import com.example.bazar.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -49,34 +50,38 @@ public class ProductServiceImpl implements ProductService{
     private final ImageDataRepository imageDataRepository;
 
     @Override
-    public void likeProduct(String token, UUID productId) {
+    public boolean likeProduct(String token, UUID productId) {
         User user = authService.getUserFromToken(token);
         Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
 
         Optional<Like> existingLike = likeRepository.findByUserAndProduct(user, product);
         if (existingLike.isPresent()) {
             likeRepository.delete(existingLike.get());
+            return false;
         } else {
             Like like = new Like();
             like.setUser(user);
             like.setProduct(product);
             likeRepository.save(like);
+            return true;
         }
     }
 
     @Override
-    public void addFavorite(String token, UUID productId) {
+    public boolean addFavorite(String token, UUID productId) {
         User user = authService.getUserFromToken(token);
         Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
 
         Optional<Favorite> existingFavorite = favoriteRepository.findByUserAndProduct(user, product);
         if (existingFavorite.isPresent()) {
             favoriteRepository.delete(existingFavorite.get());
+            return false;
         } else {
             Favorite favorite = new Favorite();
             favorite.setUser(user);
             favorite.setProduct(product);
             favoriteRepository.save(favorite);
+            return true;
         }
     }
 
@@ -94,7 +99,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public void create(ProductRequest request, List<MultipartFile> files, String token) {
+    public ProductDetailResponse create(ProductRequest request, List<MultipartFile> files, String token) {
         User user = authService.getUserFromToken(token);
         Seller seller = sellerRepository.findById(user.getId()).orElseThrow(() -> new CustomException("Internal server error", HttpStatus.BAD_GATEWAY));
         Product product = new Product();
@@ -109,7 +114,7 @@ public class ProductServiceImpl implements ProductService{
             imageDataList.add(imageData);
         }
         savedProduct.setImageData(imageDataList);
-        productRepository.save(productMapper.toProduct(savedProduct, request));
+        return productMapper.toDetailResponse(productRepository.save(productMapper.toProduct(savedProduct, request)));
     }
 
     @Override
@@ -130,7 +135,7 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public List<CommentResponse> getComments(UUID productId, int offset, int pageSize) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
-        Pageable pageable = PageRequest.of(offset, pageSize);
+        Pageable pageable = PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         return commentRepository.findByProduct(product, pageable).stream()
                 .map(comment -> {

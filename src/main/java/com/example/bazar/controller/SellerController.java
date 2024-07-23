@@ -4,6 +4,7 @@ import com.example.bazar.model.domain.Product;
 import com.example.bazar.model.dto.seller.SellerRequest;
 import com.example.bazar.model.dto.seller.SellerResponse;
 import com.example.bazar.service.SellerService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RestController("/sellers")
-@RequiredArgsConstructor
+@RestController
+@AllArgsConstructor
+@RequestMapping("/sellers")
 public class SellerController {
     private final SellerService sellerService;
 
