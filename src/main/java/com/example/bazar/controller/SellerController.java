@@ -1,24 +1,46 @@
 package com.example.bazar.controller;
 
 import com.example.bazar.model.domain.Product;
+import com.example.bazar.model.dto.seller.SellerRequest;
+import com.example.bazar.model.dto.seller.SellerResponse;
 import com.example.bazar.service.SellerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController("/seller")
+import java.util.List;
+import java.util.UUID;
+
+@RestController("/sellers")
 @RequiredArgsConstructor
 public class SellerController {
     private final SellerService sellerService;
-//    @PostMapping("/addProduct")
-//    public void addProduct(@RequestBody Product product, @RequestHeader("Authorization") String token){
-//        sellerService.addProduct(product, token);
-//    }
-//    @PostMapping("/removeProduct/{id}")
-//    public void removeProduct(@PathVariable Long id, @RequestHeader("Authorization") String token){
-//        sellerService.removeProduct(id, token);
-//    }
-//    @PostMapping("/updateProduct/{productId}")
-//    public void updateProduct(@PathVariable Long productId, @RequestBody Product product, @RequestHeader("Authorization") String token){
-//        sellerService.updateProduct(productId, product, token);
-//    }
+
+    @GetMapping
+    public List<SellerResponse> all(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "10") int pageSize) {
+        return sellerService.all(offset, pageSize);
+    }
+
+    @GetMapping("/{id}")
+    public SellerResponse getById(@PathVariable UUID id) {
+        return sellerService.getById(id);
+    }
+
+    @GetMapping("/profile")
+    public SellerResponse getProfile(@RequestHeader("Authorization") String token) {
+        return sellerService.getProfile(token);
+    }
+
+    @PutMapping("/update")
+    public SellerResponse update(@RequestHeader("Authorization") String token, @RequestBody SellerRequest request) {
+        return sellerService.update(token, request);
+    }
+
+    @DeleteMapping("/delete")
+    public void delete(@RequestHeader("Authorization") String token) {
+        sellerService.delete(token);
+    }
 }

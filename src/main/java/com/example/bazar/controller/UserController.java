@@ -10,11 +10,11 @@ import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
     private final MyUserService service;
 
-    @GetMapping("/all")
+    @GetMapping
     public List<UserResponse> all(
             @RequestParam(defaultValue = "0") int offset,
             @RequestParam(defaultValue = "10") int pageSize) {

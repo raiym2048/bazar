@@ -123,7 +123,8 @@ public class AuthServiceImpl implements AuthService {
         return password;
     }
 
-    private String generateRandomPassword() {
+    @Override
+    public String generateRandomPassword() {
         String elements = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/?!<>[]{}";
         StringBuilder password = new StringBuilder();
         Random random = new Random();

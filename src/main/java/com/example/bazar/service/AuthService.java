@@ -12,4 +12,5 @@ public interface AuthService {
     AuthResponse login(LoginRequest loginRequest);
     void manuelRegister(ManualRegisterRequest request);
     public User getUserFromToken(String token);
+    String generateRandomPassword();
 }
