@@ -27,8 +27,5 @@ public class AuthController {
         return service.login(loginRequest);
     }
 
-    @PostMapping("/manual-register")
-    public void manuelRegister(@RequestBody ManualRegisterRequest request) {
-        service.manuelRegister(request);
-    }
+
 }

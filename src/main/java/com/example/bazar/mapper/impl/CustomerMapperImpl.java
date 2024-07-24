@@ -1,7 +1,8 @@
 package com.example.bazar.mapper.impl;
 
+
 import com.example.bazar.mapper.CustomerMapper;
-import com.example.bazar.model.domain.Customer;
+import com.example.bazar.model.domain.User;
 import com.example.bazar.model.dto.customer.CustomerResponse;
 import org.springframework.stereotype.Component;
 
@@ -11,20 +12,20 @@ import java.util.List;
 @Component
 public class CustomerMapperImpl implements CustomerMapper {
     @Override
-    public CustomerResponse toResponse(Customer customer) {
-        CustomerResponse response = new CustomerResponse();
-        response.setId(customer.getId());
-        response.setName(customer.getName());
-        response.setEmail(customer.getEmail());
-        return response;
+    public List<CustomerResponse> toDtoS(List<User> list) {
+        List<CustomerResponse> responses = new ArrayList<>();
+        for (User user : list) {
+            responses.add(toDto(user));
+        }
+        return responses;
     }
 
     @Override
-    public List<CustomerResponse> toResponseList(List<Customer> customers) {
-        List<CustomerResponse> responses = new ArrayList<>();
-        for (Customer customer : customers) {
-            responses.add(toResponse(customer));
-        }
-        return responses;
+    public CustomerResponse toDto(User user) {
+        CustomerResponse response = new CustomerResponse();
+        response.setId(user.getId());
+        response.setName(user.getName());
+        response.setEmail(user.getEmail());
+        return response;
     }
 }

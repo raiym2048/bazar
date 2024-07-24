@@ -3,37 +3,26 @@ package com.example.bazar.service.impl;
 import com.example.bazar.config.JwtService;
 import com.example.bazar.exception.CustomException;
 import com.example.bazar.mapper.AuthMapper;
-import com.example.bazar.model.domain.Customer;
-import com.example.bazar.model.domain.Manager;
-import com.example.bazar.model.domain.Seller;
 import com.example.bazar.model.domain.User;
 import com.example.bazar.model.dto.auth.AuthResponse;
 import com.example.bazar.model.dto.auth.LoginRequest;
 import com.example.bazar.model.dto.auth.ManualRegisterRequest;
 import com.example.bazar.model.dto.auth.RegisterRequest;
-import com.example.bazar.model.dto.user.UserRequest;
 import com.example.bazar.model.enums.Role;
-import com.example.bazar.repository.CustomerRepository;
 import com.example.bazar.repository.ManagerRepository;
 import com.example.bazar.repository.SellerRepository;
 import com.example.bazar.repository.UserRepository;
 import com.example.bazar.service.AuthService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
 import java.util.Random;
 
 @Service
@@ -45,7 +34,6 @@ public class AuthServiceImpl implements AuthService {
     private final ManagerRepository managerRepository;
     private final AuthMapper authMapper;
     private final AuthenticationManager authenticationManager;
-    private final CustomerRepository customerRepository;
     private final JavaMailSender mailSender;
     private final PasswordEncoder encoder;
     private final JwtService jwtService;
@@ -55,12 +43,8 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException("User with this email is already exist", HttpStatus.FOUND);
         }
         User user = authMapper.toUserDto(request);
-        Customer customer = new Customer(
-                request.getName(),
-                request.getEmail(),
-                request.getPassword()
-        );
-        customerRepository.saveAndFlush(customer);
+
+        userRepository.save(user);
         return authMapper.toDto(user);
     }
     @Override
@@ -83,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
         Role role = Role.valueOf(request.getRole());
         String encodedPassword = encoder.encode(sendPassword(request.getEmail()));
 
-        switch (role) {
+/*        switch (role) {
             case SELLER:
                 Seller seller = new Seller(request.getName(), request.getEmail(), encodedPassword);
                 sellerRepository.save(seller);
@@ -96,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
                 User user = new User(request.getName(), request.getEmail(), encodedPassword, role);
                 userRepository.save(user);
                 break;
-        }
+        }*/
     }
 
     @Override

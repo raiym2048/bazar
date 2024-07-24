@@ -14,13 +14,13 @@ public class SellerMapperImpl implements SellerMapper {
     @Override
     public SellerResponse toResponse(Seller seller) {
         SellerResponse response = new SellerResponse();
-        response.setId(seller.getId());
+        response.setId(seller.getId());/*
         response.setName(seller.getName());
-        response.setEmail(seller.getEmail());
+        response.setEmail(seller.getEmail());*/
         response.setAddress(seller.getAddress());
         response.setPhoneNumber(seller.getPhoneNumber());
         response.setCompanyName(seller.getCompanyName());
-        response.setImage(seller.getImageData().getPath());
+        response.setImage(seller.getImage());
         return response;
     }
 
@@ -34,9 +34,9 @@ public class SellerMapperImpl implements SellerMapper {
     }
 
     @Override
-    public Seller toSeller(Seller seller, SellerRequest request) {
+    public Seller toSeller(Seller seller, SellerRequest request) {/*
         seller.setName(request.getName());
-        seller.setEmail(request.getEmail());
+        seller.setEmail(request.getEmail());*/
         seller.setPhoneNumber(request.getPhoneNumber());
         seller.setCompanyName(request.getCompanyName());
         return seller;

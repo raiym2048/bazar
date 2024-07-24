@@ -1,8 +1,6 @@
 package com.example.bazar.service.impl;
 
 import com.example.bazar.exception.CustomException;
-import com.example.bazar.model.domain.ImageData;
-import com.example.bazar.repository.ImageDataRepository;
 import com.example.bazar.service.ImageService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,19 +18,13 @@ import java.nio.file.Files;
 @RequiredArgsConstructor
 @Slf4j
 public class ImageServiceImpl implements ImageService {
-    private final ImageDataRepository imageDataRepository;
     @Value("${file.system.path}")
     private String filePath;
 
     @Override
-    public ImageData uploadImage(MultipartFile file) {
-        ImageData imageData = new ImageData();
+    public String uploadImage(MultipartFile file) {
         String imageName = System.currentTimeMillis() + "_" + file.getOriginalFilename().replaceAll("\\s+", "_");
-        imageData.setName(imageName);
-        imageData.setType(file.getContentType());
         String fullPath = filePath + imageName;
-        imageData.setPath(fullPath);
-
         try {
             file.transferTo(new File(fullPath));
         } catch (IOException e) {
@@ -40,18 +32,17 @@ public class ImageServiceImpl implements ImageService {
             throw new CustomException("File transfer failed: " + e.getMessage(), HttpStatus.EXPECTATION_FAILED);
         }
 
-        return imageDataRepository.save(imageData);
+        return imageName;
     }
 
 
     @Override
     @Transactional
     public byte[] downloadImage(String name) {
-        ImageData imageData = imageDataRepository.findByName(name).orElseThrow(() -> new CustomException("Image not found", HttpStatus.NOT_FOUND));
-        String filePath = imageData.getPath();
+        String file = filePath + name;
         byte[] image;
         try {
-            image = Files.readAllBytes(new File(filePath).toPath());
+            image = Files.readAllBytes(new File(file).toPath());
         } catch (IOException e) {
             log.debug("Reading the file is failed: {}", e.getMessage());
             throw new CustomException(e.getMessage(), HttpStatus.BAD_GATEWAY);
@@ -62,9 +53,6 @@ public class ImageServiceImpl implements ImageService {
     @Override
     @Transactional
     public void delete(String name) {
-        if (imageDataRepository.findByName(name).isEmpty()) {
-            throw new CustomException("Image not found", HttpStatus.NOT_FOUND);
-        }
-        imageDataRepository.deleteByName(name);
+       //todo delete from package
     }
 }

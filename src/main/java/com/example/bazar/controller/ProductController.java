@@ -6,6 +6,7 @@ import com.example.bazar.model.dto.product.ProductRequest;
 import com.example.bazar.model.dto.product.ProductResponse;
 import com.example.bazar.service.ProductService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,13 +35,6 @@ public class ProductController {
         productService.addComment(token, productId, content);
     }
 
-    @PostMapping("/create")
-    public void create(@RequestPart(value = "request") ProductRequest request,
-                       @RequestPart(value = "files", required = false) List<MultipartFile> files,
-                       @RequestHeader("Authorization") String token) {
-        productService.create(request, files, token);
-    }
-
     @GetMapping("/detail/{id}")
     public ProductDetailResponse getDetail(@PathVariable UUID id) {
         return productService.getDetail(id);
@@ -48,8 +42,9 @@ public class ProductController {
 
     @GetMapping("/all")
     public List<ProductResponse> getAll(@RequestParam(defaultValue = "0") int offset,
-                                        @RequestParam(defaultValue = "10") int pageSize) {
-        return productService.getAll(offset, pageSize);
+                                        @RequestParam(defaultValue = "10") int pageSize,
+                                        @RequestHeader(required = false,  name = "Authorization") String token) {
+        return productService.getAll(offset, pageSize, token);
     }
 
     @GetMapping("/comments/{productId}")

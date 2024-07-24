@@ -50,7 +50,7 @@ public class SellerServiceImpl implements SellerService {
     public SellerResponse update(String token, SellerRequest request) {
         User user = authService.getUserFromToken(token);
         Seller seller = sellerRepository.findById(user.getId()).orElseThrow(() -> new CustomException("Seller not found", HttpStatus.NOT_FOUND));
-        if (!seller.getEmail().equals(request.getEmail())) {
+        /*if (!seller.getEmail().equals(request.getEmail())) {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom("bazar@gmail.com");
             message.setSubject("Verify the email");
@@ -58,7 +58,7 @@ public class SellerServiceImpl implements SellerService {
             message.setTo(request.getEmail());
             mailSender.send(message);
             // TODO: Later fix this code
-        }
+        }*/
         Seller updatedSeller = sellerMapper.toSeller(seller, request);
         sellerRepository.save(updatedSeller);
         return sellerMapper.toResponse(updatedSeller);

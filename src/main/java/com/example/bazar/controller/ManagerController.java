@@ -1,5 +1,7 @@
 package com.example.bazar.controller;
 
+import com.example.bazar.model.dto.auth.AuthResponse;
+import com.example.bazar.model.dto.auth.SellerRegisterRequest;
 import com.example.bazar.model.dto.manager.ManagerResponse;
 import com.example.bazar.service.ManagerService;
 import lombok.AllArgsConstructor;
@@ -29,5 +31,10 @@ public class ManagerController {
     @GetMapping("/profile")
     public ManagerResponse getProfile(@RequestHeader("Authorization") String token) {
         return service.getProfile(token);
+    }
+
+    @PostMapping("/register/seller")
+    public AuthResponse registerSeller(@RequestBody SellerRegisterRequest request){
+       return service.registerSeller(request);
     }
 }

@@ -10,23 +10,24 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.UUID;
 
 @Setter
 @Getter
 @Entity
 @Table(name = "sellers")
 @NoArgsConstructor
-public class Seller extends User {
+public class Seller {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
     private String address;
     private String phoneNumber;
     private String companyName;
-  
-    @OneToOne
-    @JoinColumn(name = "image_name", referencedColumnName = "name")
-    private ImageData imageData;
-    @OneToMany(mappedBy = "seller")
+
+    private String image;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Product> products;
-    public Seller(String name, String email, String password) {
-        super(name, email, password, Role.SELLER);
-    }
+
+
 }
