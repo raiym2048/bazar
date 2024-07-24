@@ -1,6 +1,5 @@
 package com.example.bazar.model.dto.auth;
 
-import com.example.bazar.model.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.Data;

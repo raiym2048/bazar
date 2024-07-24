@@ -10,7 +10,6 @@ import com.example.bazar.model.dto.product.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +24,7 @@ public class ProductMapperImpl implements ProductMapper {
     @Override
     public ProductDetailResponse toDetailResponse(Product product) {
         ProductDetailResponse response = new ProductDetailResponse();
-        List<String> imagePaths =  product.getImages();
+        List<String> imagePaths = product.getImages();
 
         response.setName(product.getName());
         response.setPrice(product.getPrice());
@@ -61,8 +60,8 @@ public class ProductMapperImpl implements ProductMapper {
         response.setComments(commentMapper.toDtoS(product.getComments()));
         response.setPrice(product.getPrice());
         if (user != null) {
-            response.setLiked (product.getLikes().contains(user));
-            response.setFavorited (product.getFavorites().contains(user));
+            response.setLiked(product.getLikes().contains(user));
+            response.setFavorited(product.getFavorites().contains(user));
         }
         return response;
     }

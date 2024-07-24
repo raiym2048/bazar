@@ -34,7 +34,7 @@ public class ManagerController {
     }
 
     @PostMapping("/register/seller")
-    public AuthResponse registerSeller(@RequestBody SellerRegisterRequest request){
-       return service.registerSeller(request);
+    public AuthResponse registerSeller(@RequestBody SellerRegisterRequest request) {
+        return service.registerSeller(request);
     }
 }

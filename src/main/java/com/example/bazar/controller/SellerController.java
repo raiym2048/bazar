@@ -1,6 +1,5 @@
 package com.example.bazar.controller;
 
-import com.example.bazar.model.domain.Product;
 import com.example.bazar.model.dto.product.ProductRequest;
 import com.example.bazar.model.dto.seller.SellerRequest;
 import com.example.bazar.model.dto.seller.SellerResponse;
@@ -9,8 +8,6 @@ import com.example.bazar.service.SellerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

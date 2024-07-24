@@ -3,7 +3,6 @@ package com.example.bazar.service.impl;
 import com.example.bazar.exception.CustomException;
 import com.example.bazar.mapper.AuthMapper;
 import com.example.bazar.mapper.ManagerMapper;
-import com.example.bazar.mapper.SellerMapper;
 import com.example.bazar.model.domain.Seller;
 import com.example.bazar.model.domain.User;
 import com.example.bazar.model.dto.auth.AuthResponse;

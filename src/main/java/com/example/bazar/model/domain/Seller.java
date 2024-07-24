@@ -1,9 +1,5 @@
 package com.example.bazar.model.domain;
 
-import com.example.bazar.model.enums.Role;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

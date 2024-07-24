@@ -22,6 +22,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final UserRepository userRepository;
     private final AuthService authService;
     private final CustomerMapper customerMapper;
+
     @Override
     public List<CustomerResponse> all(int offset, int pageSize) {
         return customerMapper.toDtoS(userRepository.findAllByRole(PageRequest.of(offset, pageSize), Role.CUSTOMER).stream().toList());

@@ -2,21 +2,17 @@ package com.example.bazar.service.impl;
 
 import com.example.bazar.exception.CustomException;
 import com.example.bazar.mapper.SellerMapper;
-import com.example.bazar.model.domain.Product;
 import com.example.bazar.model.domain.Seller;
 import com.example.bazar.model.domain.User;
 import com.example.bazar.model.dto.seller.SellerRequest;
 import com.example.bazar.model.dto.seller.SellerResponse;
-import com.example.bazar.repository.ProductRepository;
 import com.example.bazar.repository.SellerRepository;
-import com.example.bazar.repository.UserRepository;
 import com.example.bazar.service.AuthService;
 import com.example.bazar.service.SellerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

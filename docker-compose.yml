@@ -14,7 +14,7 @@ services:
     container_name: bazar-app
     depends_on:
       - flyway
-    command: ["./mvnw", "spring-boot:run"]  # Ensure you are using the Maven wrapper and the spring-boot plugin
+    command: [ "./mvnw", "spring-boot:run" ]  # Ensure you are using the Maven wrapper and the spring-boot plugin
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bazar
       SPRING_DATASOURCE_USERNAME: postgres
@@ -48,7 +48,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5

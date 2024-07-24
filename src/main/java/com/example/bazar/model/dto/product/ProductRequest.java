@@ -1,7 +1,6 @@
 package com.example.bazar.model.dto.product;
 
 import jakarta.persistence.Lob;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 

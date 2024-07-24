@@ -8,11 +8,13 @@ import com.example.bazar.model.dto.product.ProductResponse;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
-import java.util.Map;
 
 public interface ProductMapper {
     ProductDetailResponse toDetailResponse(Product product);
+
     ProductResponse toResponse(Product product, User user);
+
     List<ProductResponse> toResponseList(Page<Product> products, User user);
+
     Product toProduct(Product product, ProductRequest request);
 }

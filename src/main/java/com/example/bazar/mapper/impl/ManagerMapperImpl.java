@@ -13,12 +13,6 @@ public class ManagerMapperImpl implements ManagerMapper {
     @Override
     public ManagerResponse toResponse(Manager manager) {
         ManagerResponse response = new ManagerResponse();
-        response.setId(manager.getId());
-        response.setName(manager.getName());
-        response.setSurname(manager.getSurname());
-        response.setEmail(manager.getEmail());
-        response.setAddress(manager.getAddress());
-        response.setBirthday(manager.getBirthday());
         return response;
     }
 

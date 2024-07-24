@@ -3,11 +3,8 @@ package com.example.bazar.model.domain;
 import com.example.bazar.model.enums.ProductStatus;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -17,7 +14,7 @@ import java.util.UUID;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id ;
+    private UUID id;
 
     private String name;
     private double price;
@@ -29,8 +26,10 @@ public class Product {
     private Seller seller;
     @OneToMany()
     private List<User> likes;
-    @OneToMany(mappedBy = "product")
-    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
+
     @OneToMany()
     private List<User> favorites;
 

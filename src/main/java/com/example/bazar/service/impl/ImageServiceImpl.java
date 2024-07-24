@@ -53,6 +53,6 @@ public class ImageServiceImpl implements ImageService {
     @Override
     @Transactional
     public void delete(String name) {
-       //todo delete from package
+        //todo delete from package
     }
 }

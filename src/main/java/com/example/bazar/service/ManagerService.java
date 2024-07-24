@@ -9,7 +9,9 @@ import java.util.UUID;
 
 public interface ManagerService {
     List<ManagerResponse> all(int offset, int pageSize);
+
     ManagerResponse getById(UUID id);
+
     ManagerResponse getProfile(String token);
 
     AuthResponse registerSeller(SellerRegisterRequest request);

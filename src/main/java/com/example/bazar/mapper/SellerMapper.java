@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface SellerMapper {
     SellerResponse toResponse(Seller seller);
+
     List<SellerResponse> toResponseList(List<Seller> sellers);
+
     Seller toSeller(Seller seller, SellerRequest request);
 }

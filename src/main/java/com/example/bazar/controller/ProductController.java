@@ -2,17 +2,12 @@ package com.example.bazar.controller;
 
 import com.example.bazar.model.dto.product.CommentResponse;
 import com.example.bazar.model.dto.product.ProductDetailResponse;
-import com.example.bazar.model.dto.product.ProductRequest;
 import com.example.bazar.model.dto.product.ProductResponse;
 import com.example.bazar.service.ProductService;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -25,6 +20,7 @@ public class ProductController {
     public void likeProduct(@RequestHeader("Authorization") String token, @PathVariable UUID productId) {
         productService.likeProduct(token, productId);
     }
+
     @PostMapping("/favorite/{productId}")
     public void addFavorite(@RequestHeader("Authorization") String token, @PathVariable UUID productId) {
         productService.addFavorite(token, productId);
@@ -43,7 +39,7 @@ public class ProductController {
     @GetMapping("/all")
     public List<ProductResponse> getAll(@RequestParam(defaultValue = "0") int offset,
                                         @RequestParam(defaultValue = "10") int pageSize,
-                                        @RequestHeader(required = false,  name = "Authorization") String token) {
+                                        @RequestHeader(required = false, name = "Authorization") String token) {
         return productService.getAll(offset, pageSize, token);
     }
 

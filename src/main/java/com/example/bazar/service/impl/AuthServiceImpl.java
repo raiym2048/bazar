@@ -37,9 +37,10 @@ public class AuthServiceImpl implements AuthService {
     private final JavaMailSender mailSender;
     private final PasswordEncoder encoder;
     private final JwtService jwtService;
+
     @Override
     public AuthResponse register(RegisterRequest request) {
-        if(userRepository.findByEmail(request.getEmail()).isPresent()) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new CustomException("User with this email is already exist", HttpStatus.FOUND);
         }
         User user = authMapper.toUserDto(request);
@@ -47,6 +48,7 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
         return authMapper.toDto(user);
     }
+
     @Override
     public AuthResponse login(LoginRequest loginRequest) {
         authenticationManager.authenticate(

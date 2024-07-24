@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -34,8 +33,12 @@ public class User implements UserDetails {
     @OneToOne(cascade = CascadeType.ALL)
     private Seller seller;
 
-    @OneToMany
-    private List<Comment> comments;
+    public User(String name, String email, String password, Role role) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -47,12 +50,6 @@ public class User implements UserDetails {
         return email;
     }
 
-    public User(String name, String email, String password, Role role) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
     @Override
     public String getPassword() {
         return password;
