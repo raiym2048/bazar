@@ -16,10 +16,10 @@ services:
       - flyway
     command: ["./mvnw", "spring-boot:run"]  # Ensure you are using the Maven wrapper and the spring-boot plugin
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/swis_restore
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bazar
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 1234
-      SPRING_DATASOURCE_DB: swis_restore
+      SPRING_DATASOURCE_DB: bazar
     ports:
       - '2020:2020'
     networks:
@@ -27,7 +27,7 @@ services:
 
   flyway:
     image: flyway/flyway:latest  # Using the official Flyway image which should have the latest JDBC drivers
-    command: -url=jdbc:postgresql://postgres:5432/swis_restore -schemas=public -user=postgres -password=1234 migrate
+    command: -url=jdbc:postgresql://postgres:5432/bazar -schemas=public -user=postgres -password=1234 migrate
     depends_on:
       postgres:
         condition: service_healthy
@@ -42,7 +42,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1234
-      POSTGRES_DB: swis_restore
+      POSTGRES_DB: bazar
     ports:
       - "5434:5432"
     volumes:
