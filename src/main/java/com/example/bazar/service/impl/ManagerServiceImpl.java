@@ -8,6 +8,7 @@ import com.example.bazar.model.domain.User;
 import com.example.bazar.model.dto.auth.AuthResponse;
 import com.example.bazar.model.dto.auth.SellerRegisterRequest;
 import com.example.bazar.model.dto.manager.ManagerResponse;
+import com.example.bazar.model.enums.Role;
 import com.example.bazar.repository.ManagerRepository;
 import com.example.bazar.repository.SellerRepository;
 import com.example.bazar.repository.UserRepository;
@@ -16,6 +17,7 @@ import com.example.bazar.service.ManagerService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,6 +33,7 @@ public class ManagerServiceImpl implements ManagerService {
     private final UserRepository userRepository;
     private final SellerRepository sellerRepository;
     private final AuthMapper authMapper;
+    private final PasswordEncoder encoder;
 
     @Override
     public List<ManagerResponse> all(int offset, int pageSize) {
@@ -56,8 +59,10 @@ public class ManagerServiceImpl implements ManagerService {
         }
         User user = new User();
         user.setEmail(request.getEmail());
+        user.setRole(Role.SELLER);
         String randPassword = authService.generateRandomPassword();
-        user.setPassword(randPassword);
+        user.setPassword(encoder.encode(randPassword));
+        System.out.println("Password of the seller: " +  randPassword);
 
         Seller seller = new Seller();
         sellerRepository.save(seller);

@@ -21,14 +21,11 @@ import com.example.bazar.service.ImageService;
 import com.example.bazar.service.ProductService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -146,8 +143,7 @@ public class ProductServiceImpl implements ProductService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<ProductResponse> getSellersProducts(String token, int offset, int pageSize) {
+    public List<ProductResponse> getMyProducts(String token, int offset, int pageSize) {
         User user = authService.getUserFromToken(token);
         List<Product> products = productRepository.findAllBySeller(user.getSeller(), PageRequest.of(offset, pageSize));
         return productMapper.toResponseList(products, user);
@@ -161,5 +157,14 @@ public class ProductServiceImpl implements ProductService {
             return productMapper.toDetailResponse(product);
         }
         throw new CustomException("Product doesn't belong to seller", HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    public List<ProductResponse> getSellersProduct(String token, UUID sellerId, int offset, int pageSize) {
+        System.out.println("In service");
+        User user = authService.getUserFromToken(token);
+        Seller seller = sellerRepository.findById(sellerId).orElseThrow(() -> new CustomException("Seller not found", HttpStatus.NOT_FOUND));
+        System.out.println("Seller id: " + seller.getId());
+        return productMapper.toResponseList(productRepository.findAllBySeller(seller, PageRequest.of(offset, pageSize)), user);
     }
 }

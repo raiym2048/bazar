@@ -5,8 +5,5 @@ import lombok.Data;
 
 @Data
 public class SellerRegisterRequest {
-
     private String email;
-    private String password;
-    private Role role;
 }

@@ -10,7 +10,7 @@ import com.example.bazar.service.SellerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.patterns.IToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -60,14 +60,23 @@ public class SellerController {
     }
 
     @GetMapping("/product")
-    public List<ProductResponse> getSellersProducts(@RequestHeader("Authorization") String token,
+    public List<ProductResponse> getMyProducts(@RequestHeader("Authorization") String token,
                                                     @RequestParam(defaultValue = "0") int offset,
                                                     @RequestParam(defaultValue = "10") int pageSize) {
-        return productService.getSellersProducts(token, offset, pageSize);
+        return productService.getMyProducts(token, offset, pageSize);
     }
 
-    @GetMapping("/product/{productId}")
-    public ProductDetailResponse getSellersProductDetail(@RequestHeader("Authorization") String token, @PathVariable UUID productId) {
-        return productService.getSellersProductDetail(token, productId);
+//    @GetMapping("/product/{productId}")
+//    public ProductDetailResponse getSellersProductDetail(@RequestHeader("Authorization") String token, @PathVariable UUID productId) {
+//        return productService.getSellersProductDetail(token, productId);
+//    }
+
+    @GetMapping("/product/{sellerId}")
+    public List<ProductResponse> getSellersProducts(@RequestHeader("Authorization") String token,
+                                                    @PathVariable UUID sellerId,
+                                                    @RequestParam(defaultValue = "0") int offset,
+                                                    @RequestParam(defaultValue = "10") int pageSize) {
+        System.out.println("In controller");
+        return productService.getSellersProduct(token, sellerId, offset, pageSize);
     }
 }
