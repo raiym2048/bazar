@@ -15,6 +15,8 @@ public interface ProductService {
     void addComment(String token, UUID productId, String content);
     ProductDetailResponse create(ProductRequest request, List<MultipartFile> files, String token);
     ProductDetailResponse getDetail(UUID id);
-    List<ProductResponse> getAll(int offset, int pageSize);
+
+    List<ProductResponse> getAll(int offset, int pageSize, String token);
+
     List<CommentResponse> getComments(UUID productId, int offset, int pageSize);
 }

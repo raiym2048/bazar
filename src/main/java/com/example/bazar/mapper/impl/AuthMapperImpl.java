@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 public class AuthMapperImpl implements AuthMapper {
     private final JwtService jwtService;
     private final PasswordEncoder encoder;
+
     @Override
     public AuthResponse toDto(User user) {
         AuthResponse authResponse = new AuthResponse();
@@ -26,6 +27,7 @@ public class AuthMapperImpl implements AuthMapper {
     @Override
     public User toUserDto(RegisterRequest request) {
         User user = new User();
+        user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(encoder.encode(request.getPassword()));
         user.setRole(Role.CUSTOMER);
@@ -35,9 +37,7 @@ public class AuthMapperImpl implements AuthMapper {
     @Override
     public Seller toSeller(User user) {
         Seller seller = new Seller();
-        seller.setName(user.getName());
-        seller.setEmail(user.getEmail());
-        seller.setPassword(user.getPassword());
+        // todo
         return seller;
     }
 }

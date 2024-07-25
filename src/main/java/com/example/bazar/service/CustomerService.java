@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public interface CustomerService {
     List<CustomerResponse> all(int offset, int pageSize);
+
     CustomerResponse findById(UUID id);
+
     CustomerResponse getProfile(String token);
 }

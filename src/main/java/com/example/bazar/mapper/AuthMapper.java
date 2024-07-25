@@ -7,6 +7,8 @@ import com.example.bazar.model.dto.auth.RegisterRequest;
 
 public interface AuthMapper {
     AuthResponse toDto(User user);
+
     User toUserDto(RegisterRequest request);
+
     Seller toSeller(User user);
 }

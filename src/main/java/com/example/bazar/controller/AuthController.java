@@ -2,7 +2,6 @@ package com.example.bazar.controller;
 
 import com.example.bazar.model.dto.auth.AuthResponse;
 import com.example.bazar.model.dto.auth.LoginRequest;
-import com.example.bazar.model.dto.auth.ManualRegisterRequest;
 import com.example.bazar.model.dto.auth.RegisterRequest;
 import com.example.bazar.service.AuthService;
 import lombok.AllArgsConstructor;
@@ -27,8 +26,5 @@ public class AuthController {
         return service.login(loginRequest);
     }
 
-    @PostMapping("/manual-register")
-    public void manuelRegister(@RequestBody ManualRegisterRequest request) {
-        service.manuelRegister(request);
-    }
+
 }

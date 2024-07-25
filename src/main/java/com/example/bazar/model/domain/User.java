@@ -30,6 +30,16 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private Seller seller;
+
+    public User(String name, String email, String password, Role role) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
@@ -40,12 +50,6 @@ public class User implements UserDetails {
         return email;
     }
 
-    public User(String name, String email, String password, Role role) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
     @Override
     public String getPassword() {
         return password;

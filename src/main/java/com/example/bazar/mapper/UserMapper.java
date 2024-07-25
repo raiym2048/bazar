@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface UserMapper {
     UserResponse toResponse(User user);
+
     List<UserResponse> toResponseList(List<User> users);
+
     User toUserDto(UserRequest request);
 }

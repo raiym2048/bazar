@@ -1,6 +1,5 @@
 package com.example.bazar.controller;
 
-import com.example.bazar.model.domain.ImageData;
 import com.example.bazar.service.impl.ImageServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,7 +15,7 @@ public class ImageController {
     private final ImageServiceImpl imageService;
 
     @PostMapping("/upload")
-    public ImageData uploadImage(MultipartFile file) {
+    public String uploadImage(MultipartFile file) {
         return imageService.uploadImage(file);
     }
 

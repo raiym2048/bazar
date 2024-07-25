@@ -3,51 +3,52 @@ package com.example.bazar.service.impl;
 import com.example.bazar.exception.CustomException;
 import com.example.bazar.mapper.CommentMapper;
 import com.example.bazar.mapper.FavoriteMapper;
-import com.example.bazar.mapper.LikeMapper;
 import com.example.bazar.mapper.ProductMapper;
-import com.example.bazar.model.domain.*;
+import com.example.bazar.model.domain.Comment;
+import com.example.bazar.model.domain.Product;
+import com.example.bazar.model.domain.Seller;
+import com.example.bazar.model.domain.User;
 import com.example.bazar.model.dto.product.CommentResponse;
 import com.example.bazar.model.dto.product.ProductDetailResponse;
 import com.example.bazar.model.dto.product.ProductRequest;
 import com.example.bazar.model.dto.product.ProductResponse;
-import com.example.bazar.repository.*;
+import com.example.bazar.model.enums.ProductStatus;
+import com.example.bazar.repository.CommentRepository;
+import com.example.bazar.repository.ProductRepository;
+import com.example.bazar.repository.SellerRepository;
 import com.example.bazar.service.AuthService;
 import com.example.bazar.service.ImageService;
 import com.example.bazar.service.ProductService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 @Slf4j
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final SellerRepository sellerRepository;
     private final AuthService authService;
-    private final LikeRepository likeRepository;
-    private final FavoriteRepository favoriteRepository;
     private final CommentRepository commentRepository;
-    private final LikeMapper likeMapper;
     private final FavoriteMapper favoriteMapper;
     private final CommentMapper commentMapper;
-    private final CustomerRepository customerRepository;
     private final ImageService imageService;
-    private final ImageDataRepository imageDataRepository;
 
     @Override
     public boolean likeProduct(String token, UUID productId) {
@@ -65,13 +66,14 @@ public class ProductServiceImpl implements ProductService{
             likeRepository.save(like);
             return true;
         }
+        productRepository.save(product);
     }
 
     @Override
     public boolean addFavorite(String token, UUID productId) {
         User user = authService.getUserFromToken(token);
         Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
-
+      
         Optional<Favorite> existingFavorite = favoriteRepository.findByUserAndProduct(user, product);
         if (existingFavorite.isPresent()) {
             favoriteRepository.delete(existingFavorite.get());
@@ -81,8 +83,8 @@ public class ProductServiceImpl implements ProductService{
             favorite.setUser(user);
             favorite.setProduct(product);
             favoriteRepository.save(favorite);
-            return true;
-        }
+            return true;        }
+        productRepository.save(product);
     }
 
     @Override
@@ -93,7 +95,6 @@ public class ProductServiceImpl implements ProductService{
         Comment comment = new Comment();
         comment.setContent(content);
         comment.setUser(user);
-        comment.setProduct(product);
         comment.setCreatedAt(LocalDateTime.now());
         commentRepository.save(comment);
     }
@@ -101,18 +102,20 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public ProductDetailResponse create(ProductRequest request, List<MultipartFile> files, String token) {
         User user = authService.getUserFromToken(token);
-        Seller seller = sellerRepository.findById(user.getId()).orElseThrow(() -> new CustomException("Internal server error", HttpStatus.BAD_GATEWAY));
+        Seller seller = user.getSeller();
+        if (seller == null)
+            throw new CustomException("Seller not found", HttpStatus.NOT_FOUND);
         Product product = new Product();
         product.setSeller(seller);
-        Product savedProduct = productRepository.save(product);
-        List<ImageData> imageDataList = new ArrayList<>();
+        List<String> imageDataList = new ArrayList<>();
         for (MultipartFile file : files) {
-            ImageData imageData = null;
-            imageData = imageService.uploadImage(file);
-            imageData.setProduct(savedProduct);
-            imageDataRepository.save(imageData);
-            imageDataList.add(imageData);
+            String image = imageService.uploadImage(file);
+
+            imageDataList.add(image);
         }
+        product.setStatus(ProductStatus.WAITING);
+        product.setImages(imageDataList);
+        productRepository.save(productMapper.toProduct(product, request));
         savedProduct.setImageData(imageDataList);
         return productMapper.toDetailResponse(productRepository.save(productMapper.toProduct(savedProduct, request)));
     }
@@ -127,9 +130,12 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public List<ProductResponse> getAll(int offset, int pageSize) {
-        Page<Product> products = productRepository.findAll(PageRequest.of(offset, pageSize));
-        return productMapper.toResponseList(products.stream().toList());
+    public List<ProductResponse> getAll(int offset, int pageSize, String token) {
+        Page<Product> products = productRepository.findAllByStatus(PageRequest.of(offset, pageSize), ProductStatus.ACCEPTED);
+        if (token != null) {
+            return productMapper.toResponseList(products, authService.getUserFromToken(token));
+        }
+        return productMapper.toResponseList(products, null);
     }
 
     @Override

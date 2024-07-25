@@ -4,7 +4,9 @@ import com.example.bazar.model.enums.Role;
 import lombok.Data;
 
 @Data
-public class AuthResponse {
-    private String token;
+public class SellerRegisterRequest {
+
+    private String email;
+    private String password;
     private Role role;
 }

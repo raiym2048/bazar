@@ -1,6 +1,5 @@
 package com.example.bazar.service;
 
-import com.example.bazar.model.dto.user.UserRequest;
 import com.example.bazar.model.dto.user.UserResponse;
 import org.springframework.http.ResponseEntity;
 

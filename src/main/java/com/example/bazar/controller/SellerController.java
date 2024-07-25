@@ -1,14 +1,16 @@
 package com.example.bazar.controller;
 
-import com.example.bazar.model.domain.Product;
+import com.example.bazar.model.dto.product.ProductRequest;
 import com.example.bazar.model.dto.seller.SellerRequest;
 import com.example.bazar.model.dto.seller.SellerResponse;
+import com.example.bazar.service.ProductService;
 import com.example.bazar.service.SellerService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,8 +20,10 @@ import java.util.UUID;
 @RequestMapping("/sellers")
 public class SellerController {
     private final SellerService sellerService;
+    private final ProductService productService;
 
-    @GetMapping
+
+    @GetMapping("/all")
     public List<SellerResponse> all(
             @RequestParam(defaultValue = "0") int offset,
             @RequestParam(defaultValue = "10") int pageSize) {
@@ -41,8 +45,15 @@ public class SellerController {
         return sellerService.update(token, request);
     }
 
-    @DeleteMapping("/delete")
-    public void delete(@RequestHeader("Authorization") String token) {
-        sellerService.delete(token);
+
+    @PostMapping("/create/product")
+    public void create(@RequestPart(value = "request") String request,
+                       @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                       @RequestHeader("Authorization") String token) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        ProductRequest productRequest = mapper.readValue(request, ProductRequest.class);
+
+        System.out.println("files: " + files.size());
+        productService.create(productRequest, files, token);
     }
 }

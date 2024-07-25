@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface ManagerMapper {
     ManagerResponse toResponse(Manager manager);
-    List<ManagerResponse>  toResponseList(List<Manager> managers);
+
+    List<ManagerResponse> toResponseList(List<Manager> managers);
 }

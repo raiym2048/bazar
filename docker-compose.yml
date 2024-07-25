@@ -1,0 +1,56 @@
+version: '3.8'
+networks:
+  app:
+
+volumes:
+  db-data:
+    driver: local
+
+services:
+  app:
+    image: bazar-app
+    build:
+      context: .
+    container_name: bazar-app
+    depends_on:
+      - flyway
+    command: [ "./mvnw", "spring-boot:run" ]  # Ensure you are using the Maven wrapper and the spring-boot plugin
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bazar
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1234
+      SPRING_DATASOURCE_DB: bazar
+    ports:
+      - '2020:2020'
+    networks:
+      - app
+
+  flyway:
+    image: flyway/flyway:latest  # Using the official Flyway image which should have the latest JDBC drivers
+    command: -url=jdbc:postgresql://postgres:5432/bazar -schemas=public -user=postgres -password=1234 migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./db/migration:/flyway/sql
+    networks:
+      - app
+
+  postgres:
+    image: postgres:15.1-alpine
+    container_name: bazar-database-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: bazar
+    ports:
+      - "5434:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app
