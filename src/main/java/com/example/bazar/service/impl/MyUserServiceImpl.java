@@ -8,7 +8,6 @@ import com.example.bazar.mapper.UserMapper;
 import com.example.bazar.model.domain.User;
 import com.example.bazar.model.dto.user.UserResponse;
 import com.example.bazar.model.enums.Role;
-import com.example.bazar.repository.CustomerRepository;
 import com.example.bazar.repository.ManagerRepository;
 import com.example.bazar.repository.SellerRepository;
 import com.example.bazar.repository.UserRepository;
@@ -33,7 +32,6 @@ public class MyUserServiceImpl implements MyUserService {
     private final ManagerMapper managerMapper;
     private final SellerRepository sellerRepository;
     private final SellerMapper sellerMapper;
-    private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
     @Override
@@ -49,9 +47,10 @@ public class MyUserServiceImpl implements MyUserService {
         } else if (user.getRole() == Role.SELLER) {
             return new ResponseEntity<>(sellerMapper.toResponse(sellerRepository.findById(user.getId()).orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND))), HttpStatus.OK);
         } else if (user.getRole() == Role.CUSTOMER) {
-            return new ResponseEntity<>(customerMapper.toResponse(customerRepository.findById(user.getId()).orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND))), HttpStatus.OK);
+            // TODO: Return customers:
         } else {
             return new ResponseEntity<>(userMapper.toResponse(user), HttpStatus.OK);
         }
+        return null;
     }
 }

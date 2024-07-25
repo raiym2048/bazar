@@ -19,4 +19,7 @@ public interface ProductService {
     List<ProductResponse> getAll(int offset, int pageSize, String token);
 
     List<CommentResponse> getComments(UUID productId, int offset, int pageSize);
+
+    List<ProductResponse> getSellersProducts(String token, int offset, int pageSize);
+    ProductDetailResponse getSellersProductDetail(String token, UUID productId);
 }

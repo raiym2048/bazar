@@ -2,10 +2,12 @@ package com.example.bazar.controller;
 
 import com.example.bazar.model.dto.product.CommentResponse;
 import com.example.bazar.model.dto.product.ProductDetailResponse;
+import com.example.bazar.model.dto.product.ProductRequest;
 import com.example.bazar.model.dto.product.ProductResponse;
 import com.example.bazar.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
