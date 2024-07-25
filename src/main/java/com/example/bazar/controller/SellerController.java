@@ -1,6 +1,8 @@
 package com.example.bazar.controller;
 
+import com.example.bazar.model.dto.product.ProductDetailResponse;
 import com.example.bazar.model.dto.product.ProductRequest;
+import com.example.bazar.model.dto.product.ProductResponse;
 import com.example.bazar.model.dto.seller.SellerRequest;
 import com.example.bazar.model.dto.seller.SellerResponse;
 import com.example.bazar.service.ProductService;
@@ -23,7 +25,7 @@ public class SellerController {
     private final ProductService productService;
 
 
-    @GetMapping("/all")
+    @GetMapping
     public List<SellerResponse> all(
             @RequestParam(defaultValue = "0") int offset,
             @RequestParam(defaultValue = "10") int pageSize) {
@@ -55,5 +57,17 @@ public class SellerController {
 
         System.out.println("files: " + files.size());
         productService.create(productRequest, files, token);
+    }
+
+    @GetMapping("/product")
+    public List<ProductResponse> getSellersProducts(@RequestHeader("Authorization") String token,
+                                                    @RequestParam(defaultValue = "0") int offset,
+                                                    @RequestParam(defaultValue = "10") int pageSize) {
+        return productService.getSellersProducts(token, offset, pageSize);
+    }
+
+    @GetMapping("/product/{productId}")
+    public ProductDetailResponse getSellersProductDetail(@RequestHeader("Authorization") String token, @PathVariable UUID productId) {
+        return productService.getSellersProductDetail(token, productId);
     }
 }

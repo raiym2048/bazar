@@ -7,7 +7,6 @@ import com.example.bazar.model.domain.User;
 import com.example.bazar.model.dto.product.ProductDetailResponse;
 import com.example.bazar.model.dto.product.ProductRequest;
 import com.example.bazar.model.dto.product.ProductResponse;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -67,7 +66,7 @@ public class ProductMapperImpl implements ProductMapper {
     }
 
     @Override
-    public List<ProductResponse> toResponseList(Page<Product> products, User user) {
+    public List<ProductResponse> toResponseList(List<Product> products, User user) {
         return products.stream()
                 .map(product -> toResponse(product, user))
                 .collect(Collectors.toList());

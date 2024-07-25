@@ -55,36 +55,31 @@ public class ProductServiceImpl implements ProductService {
         User user = authService.getUserFromToken(token);
         Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
 
-        Optional<Like> existingLike = likeRepository.findByUserAndProduct(user, product);
-        if (existingLike.isPresent()) {
-            likeRepository.delete(existingLike.get());
+        if (product.getLikes().contains(user)) {
+            product.getLikes().remove(user);
+            productRepository.save(product);
             return false;
         } else {
-            Like like = new Like();
-            like.setUser(user);
-            like.setProduct(product);
-            likeRepository.save(like);
+            product.getLikes().add(user);
+            productRepository.save(product);
             return true;
         }
-        productRepository.save(product);
     }
 
     @Override
     public boolean addFavorite(String token, UUID productId) {
         User user = authService.getUserFromToken(token);
         Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
-      
-        Optional<Favorite> existingFavorite = favoriteRepository.findByUserAndProduct(user, product);
-        if (existingFavorite.isPresent()) {
-            favoriteRepository.delete(existingFavorite.get());
+
+        if (product.getFavorites().contains(user)) {
+            product.getFavorites().remove(user);
+            productRepository.save(product);
             return false;
         } else {
-            Favorite favorite = new Favorite();
-            favorite.setUser(user);
-            favorite.setProduct(product);
-            favoriteRepository.save(favorite);
-            return true;        }
-        productRepository.save(product);
+            product.getFavorites().add(user);
+            productRepository.save(product);
+            return true;
+        }
     }
 
     @Override
@@ -110,14 +105,11 @@ public class ProductServiceImpl implements ProductService {
         List<String> imageDataList = new ArrayList<>();
         for (MultipartFile file : files) {
             String image = imageService.uploadImage(file);
-
             imageDataList.add(image);
         }
         product.setStatus(ProductStatus.WAITING);
         product.setImages(imageDataList);
-        productRepository.save(productMapper.toProduct(product, request));
-        savedProduct.setImageData(imageDataList);
-        return productMapper.toDetailResponse(productRepository.save(productMapper.toProduct(savedProduct, request)));
+        return productMapper.toDetailResponse(productRepository.save(productMapper.toProduct(product, request)));
     }
 
     @Override
@@ -131,7 +123,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductResponse> getAll(int offset, int pageSize, String token) {
-        Page<Product> products = productRepository.findAllByStatus(PageRequest.of(offset, pageSize), ProductStatus.ACCEPTED);
+        List<Product> products = productRepository.findAllByStatus(PageRequest.of(offset, pageSize), ProductStatus.ACCEPTED);
         if (token != null) {
             return productMapper.toResponseList(products, authService.getUserFromToken(token));
         }
@@ -152,5 +144,22 @@ public class ProductServiceImpl implements ProductService {
                     return response;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductResponse> getSellersProducts(String token, int offset, int pageSize) {
+        User user = authService.getUserFromToken(token);
+        List<Product> products = productRepository.findAllBySeller(user.getSeller(), PageRequest.of(offset, pageSize));
+        return productMapper.toResponseList(products, user);
+    }
+
+    @Override
+    public ProductDetailResponse getSellersProductDetail(String token, UUID productId) {
+        User user = authService.getUserFromToken(token);
+        Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
+        if (user.getSeller().getProducts().contains(product)) {
+            return productMapper.toDetailResponse(product);
+        }
+        throw new CustomException("Product doesn't belong to seller", HttpStatus.BAD_REQUEST);
     }
 }
