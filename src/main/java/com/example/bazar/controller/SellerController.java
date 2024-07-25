@@ -7,6 +7,7 @@ import com.example.bazar.service.ProductService;
 import com.example.bazar.service.SellerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,8 +16,8 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequiredArgsConstructor
-@RequestMapping("/seller")
+@AllArgsConstructor
+@RequestMapping("/sellers")
 public class SellerController {
     private final SellerService sellerService;
     private final ProductService productService;

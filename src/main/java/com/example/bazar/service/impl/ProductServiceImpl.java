@@ -24,6 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,29 +51,39 @@ public class ProductServiceImpl implements ProductService {
     private final ImageService imageService;
 
     @Override
-    public void likeProduct(String token, UUID productId) {
+    public boolean likeProduct(String token, UUID productId) {
         User user = authService.getUserFromToken(token);
         Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
 
-
-        if (product.getLikes().contains(user)) {
-            product.getLikes().remove(user);
+        Optional<Like> existingLike = likeRepository.findByUserAndProduct(user, product);
+        if (existingLike.isPresent()) {
+            likeRepository.delete(existingLike.get());
+            return false;
         } else {
-            product.getLikes().add(user);
+            Like like = new Like();
+            like.setUser(user);
+            like.setProduct(product);
+            likeRepository.save(like);
+            return true;
         }
         productRepository.save(product);
     }
 
     @Override
-    public void addFavorite(String token, UUID productId) {
+    public boolean addFavorite(String token, UUID productId) {
         User user = authService.getUserFromToken(token);
         Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
-
-        if (product.getFavorites().contains(user)) {
-            product.getFavorites().remove(user);
+      
+        Optional<Favorite> existingFavorite = favoriteRepository.findByUserAndProduct(user, product);
+        if (existingFavorite.isPresent()) {
+            favoriteRepository.delete(existingFavorite.get());
+            return false;
         } else {
-            product.getFavorites().add(user);
-        }
+            Favorite favorite = new Favorite();
+            favorite.setUser(user);
+            favorite.setProduct(product);
+            favoriteRepository.save(favorite);
+            return true;        }
         productRepository.save(product);
     }
 
@@ -87,7 +100,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void create(ProductRequest request, List<MultipartFile> files, String token) {
+    public ProductDetailResponse create(ProductRequest request, List<MultipartFile> files, String token) {
         User user = authService.getUserFromToken(token);
         Seller seller = user.getSeller();
         if (seller == null)
@@ -103,6 +116,8 @@ public class ProductServiceImpl implements ProductService {
         product.setStatus(ProductStatus.WAITING);
         product.setImages(imageDataList);
         productRepository.save(productMapper.toProduct(product, request));
+        savedProduct.setImageData(imageDataList);
+        return productMapper.toDetailResponse(productRepository.save(productMapper.toProduct(savedProduct, request)));
     }
 
     @Override
@@ -126,7 +141,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<CommentResponse> getComments(UUID productId, int offset, int pageSize) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
-        Pageable pageable = PageRequest.of(offset, pageSize);
+        Pageable pageable = PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         return commentRepository.findByProduct(product, pageable).stream()
                 .map(comment -> {

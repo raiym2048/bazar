@@ -16,19 +16,27 @@ import java.util.UUID;
 public class ProductController {
     private final ProductService productService;
 
-    @PostMapping("/like/{productId}")
-    public void likeProduct(@RequestHeader("Authorization") String token, @PathVariable UUID productId) {
-        productService.likeProduct(token, productId);
+    @GetMapping("/like/{productId}")
+    public boolean likeProduct(@RequestHeader("Authorization") String token, @PathVariable UUID productId) {
+        return productService.likeProduct(token, productId);
+    }
+  
+    @GetMapping("/favorite/{productId}")
+    public boolean addFavorite(@RequestHeader("Authorization") String token, @PathVariable UUID productId) {
+        return productService.addFavorite(token, productId);
     }
 
-    @PostMapping("/favorite/{productId}")
-    public void addFavorite(@RequestHeader("Authorization") String token, @PathVariable UUID productId) {
-        productService.addFavorite(token, productId);
-    }
-
-    @PostMapping("/comment/{productId}")
-    public void addComment(@RequestHeader("Authorization") String token, @PathVariable UUID productId, @RequestParam String content) {
+    @GetMapping("/comment/{productId}")
+    public List<CommentResponse> addComment(@RequestHeader("Authorization") String token, @PathVariable UUID productId, @RequestParam String content) {
         productService.addComment(token, productId, content);
+        return productService.getComments(productId, 0, 10);
+    }
+  
+    @PostMapping("/create")
+    public ProductDetailResponse create(@RequestPart(value = "request") ProductRequest request,
+                       @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                       @RequestHeader("Authorization") String token) {
+        return productService.create(request, files, token);
     }
 
     @GetMapping("/detail/{id}")
