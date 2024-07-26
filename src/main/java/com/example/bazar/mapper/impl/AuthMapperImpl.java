@@ -21,6 +21,7 @@ public class AuthMapperImpl implements AuthMapper {
     public AuthResponse toDto(User user) {
         AuthResponse authResponse = new AuthResponse();
         authResponse.setToken(jwtService.generateToken(user));
+        authResponse.setRole(user.getRole());
         return authResponse;
     }
 
