@@ -7,8 +7,6 @@ import java.util.UUID;
 @Data
 public class SellerResponse {
     private UUID id;
-    private String name;
-    private String email;
     private String address;
     private String phoneNumber;
     private String companyName;

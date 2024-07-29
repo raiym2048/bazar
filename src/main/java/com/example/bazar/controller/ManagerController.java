@@ -1,8 +1,10 @@
 package com.example.bazar.controller;
 
+import com.example.bazar.model.domain.Address;
 import com.example.bazar.model.dto.auth.AuthResponse;
 import com.example.bazar.model.dto.auth.SellerRegisterRequest;
 import com.example.bazar.model.dto.manager.ManagerResponse;
+import com.example.bazar.model.dto.seller.AddressRequest;
 import com.example.bazar.service.ManagerService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +36,12 @@ public class ManagerController {
     }
 
     @PostMapping("/register/seller")
-    public AuthResponse registerSeller(@RequestBody SellerRegisterRequest request) {
-        return service.registerSeller(request);
+    public void registerSeller(@RequestBody SellerRegisterRequest request) {
+         service.registerSeller(request);
+    }
+
+    @PostMapping("/add/address/types")
+    public Address addAddressTypes(@RequestBody AddressRequest request){
+        return service.addAddresses(request);
     }
 }
