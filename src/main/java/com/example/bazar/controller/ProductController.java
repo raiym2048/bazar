@@ -33,13 +33,7 @@ public class ProductController {
         productService.addComment(token, productId, content);
         return productService.getComments(productId, 0, 10);
     }
-  
-    @PostMapping("/create")
-    public ProductDetailResponse create(@RequestPart(value = "request") ProductRequest request,
-                       @RequestPart(value = "files", required = false) List<MultipartFile> files,
-                       @RequestHeader("Authorization") String token) {
-        return productService.create(request, files, token);
-    }
+
 
     @GetMapping("/detail/{id}")
     public ProductDetailResponse getDetail(@PathVariable UUID id) {

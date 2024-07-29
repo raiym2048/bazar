@@ -121,6 +121,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductResponse> getAll(int offset, int pageSize, String token) {
         List<Product> products = productRepository.findAllByStatus(PageRequest.of(offset, pageSize), ProductStatus.ACCEPTED);
+        System.out.println("the size:"+products.size());
         if (token != null) {
             return productMapper.toResponseList(products, authService.getUserFromToken(token));
         }

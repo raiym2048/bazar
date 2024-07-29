@@ -29,7 +29,7 @@ public class ProductMapperImpl implements ProductMapper {
         response.setPrice(product.getPrice());
         response.setImagePaths(imagePaths);
         response.setDescription(product.getDescription());
-        response.setSellerName(product.getSeller().getCompanyName());
+        response.setSellerName(product.getSeller().getName());
         response.setSellerImagePath(product.getSeller().getImage());
 
         if (product.getLikes() != null) {
@@ -50,7 +50,7 @@ public class ProductMapperImpl implements ProductMapper {
         ProductResponse response = new ProductResponse();
         response.setId(product.getId());
         response.setImages(product.getImages());
-        response.setSeller(product.getSeller().getCompanyName());
+        response.setSeller(product.getSeller().getName());
         response.setName(product.getName());
         response.setDescription(product.getDescription());
         response.setStatus(product.getStatus().name());
