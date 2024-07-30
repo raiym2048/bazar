@@ -4,10 +4,7 @@ import com.example.bazar.exception.CustomException;
 import com.example.bazar.mapper.CommentMapper;
 import com.example.bazar.mapper.FavoriteMapper;
 import com.example.bazar.mapper.ProductMapper;
-import com.example.bazar.model.domain.Comment;
-import com.example.bazar.model.domain.Product;
-import com.example.bazar.model.domain.Seller;
-import com.example.bazar.model.domain.User;
+import com.example.bazar.model.domain.*;
 import com.example.bazar.model.dto.product.CommentResponse;
 import com.example.bazar.model.dto.product.ProductDetailResponse;
 import com.example.bazar.model.dto.product.ProductRequest;
@@ -16,6 +13,7 @@ import com.example.bazar.model.enums.ProductStatus;
 import com.example.bazar.repository.CommentRepository;
 import com.example.bazar.repository.ProductRepository;
 import com.example.bazar.repository.SellerRepository;
+import com.example.bazar.repository.TypeRepository;
 import com.example.bazar.service.AuthService;
 import com.example.bazar.service.ImageService;
 import com.example.bazar.service.ProductService;
@@ -43,9 +41,8 @@ public class ProductServiceImpl implements ProductService {
     private final SellerRepository sellerRepository;
     private final AuthService authService;
     private final CommentRepository commentRepository;
-    private final FavoriteMapper favoriteMapper;
-    private final CommentMapper commentMapper;
     private final ImageService imageService;
+    private final TypeRepository typeRepository;
 
     @Override
     public boolean likeProduct(String token, UUID productId) {
@@ -93,11 +90,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDetailResponse create(ProductRequest request, List<MultipartFile> files, String token) {
+        Type type = typeRepository.findByName(request.getType()).orElseThrow(() -> new CustomException("Type not found", HttpStatus.NOT_FOUND));
         User user = authService.getUserFromToken(token);
         Seller seller = user.getSeller();
         if (seller == null)
             throw new CustomException("Seller not found", HttpStatus.NOT_FOUND);
         Product product = new Product();
+        product.setType(type);
         product.setSeller(seller);
         List<String> imageDataList = new ArrayList<>();
         for (MultipartFile file : files) {
@@ -136,7 +135,8 @@ public class ProductServiceImpl implements ProductService {
         return commentRepository.findByProduct(product, pageable).stream()
                 .map(comment -> {
                     CommentResponse response = new CommentResponse();
-                    response.setUserName(comment.getUser().getName());
+                    response.setId(comment.getId());
+                    response.setUser(comment.getUser().getName());
                     response.setContent(comment.getContent());
                     response.setCreatedAt(comment.getCreatedAt());
                     return response;

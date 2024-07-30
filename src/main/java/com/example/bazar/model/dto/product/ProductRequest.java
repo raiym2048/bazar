@@ -8,6 +8,7 @@ import lombok.Data;
 public class ProductRequest {
     @Size(min = 2, max = 24, message = "Size: min = 2, max = 24")
     private String name;
+    private String type;
     private double price;
     @Lob
     private String description;
