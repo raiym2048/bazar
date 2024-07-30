@@ -35,4 +35,8 @@ public class Product {
 
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
+
+    @ManyToOne
+    @JoinColumn
+    private Type type;
 }
