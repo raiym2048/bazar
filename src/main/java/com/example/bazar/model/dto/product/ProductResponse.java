@@ -19,7 +19,7 @@ public class ProductResponse {
     private String seller;
     private int likeCount;
 
-    private List<CommentResponse> comments;
+    private int commentCount;
 
     private int favoriteCount;
 

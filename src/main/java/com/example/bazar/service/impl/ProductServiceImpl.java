@@ -163,7 +163,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductResponse> getSellersProduct(String token, UUID sellerId, int offset, int pageSize) {
         System.out.println("In service");
-        User user = authService.getUserFromToken(token);
+        User user = token!=null? authService.getUserFromToken(token): null;
         Seller seller = sellerRepository.findById(sellerId).orElseThrow(() -> new CustomException("Seller not found", HttpStatus.NOT_FOUND));
         System.out.println("Seller id: " + seller.getId());
         return productMapper.toResponseList(productRepository.findAllBySeller(seller, PageRequest.of(offset, pageSize)), user);
