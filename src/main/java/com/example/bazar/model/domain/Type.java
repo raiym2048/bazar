@@ -3,12 +3,11 @@ package com.example.bazar.model.domain;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Data
-@Table(name = "product_type")
+@Table(name = "product_type")  // Make sure this matches the existing table name
 public class Type {
 
     @Id
@@ -17,7 +16,4 @@ public class Type {
 
     @Column(unique = true)
     private String name;
-
-    @OneToMany(mappedBy = "type")
-    private List<Product> products;
 }

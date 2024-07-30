@@ -22,7 +22,7 @@ public class TypeServiceImpl implements TypeService {
 
     @Override
     public List<TypeResponse> all(int offset, int pageSize) {
-        return typeMapper.toResponseList(typeRepository.findAll(PageRequest.of(offset, pageSize)).stream().toList());
+        return typeMapper.toResponseList(typeRepository.findAll(PageRequest.of(offset, pageSize)).getContent());
     }
 
     @Override

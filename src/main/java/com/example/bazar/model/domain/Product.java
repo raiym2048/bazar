@@ -37,6 +37,6 @@ public class Product {
     private ProductStatus status;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "type_name", referencedColumnName = "name") // Specify the foreign key column
     private Type type;
 }
