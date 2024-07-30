@@ -1,7 +1,7 @@
 package com.example.bazar.mapper;
 
 import com.example.bazar.model.domain.Comment;
-import com.example.bazar.model.dto.product.comment.CommentResponse;
+import com.example.bazar.model.dto.product.CommentResponse;
 
 import java.util.List;
 

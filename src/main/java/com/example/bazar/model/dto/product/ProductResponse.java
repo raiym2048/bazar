@@ -1,6 +1,5 @@
 package com.example.bazar.model.dto.product;
 
-import com.example.bazar.model.dto.product.comment.CommentResponse;
 import lombok.Data;
 
 import java.util.List;

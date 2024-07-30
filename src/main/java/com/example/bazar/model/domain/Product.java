@@ -35,4 +35,8 @@ public class Product {
 
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
+
+    @ManyToOne
+    @JoinColumn(name = "type_name", referencedColumnName = "name") // Specify the foreign key column
+    private Type type;
 }
