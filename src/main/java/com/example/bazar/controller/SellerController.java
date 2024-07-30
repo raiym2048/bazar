@@ -60,7 +60,7 @@ public class SellerController {
     }
 
     @GetMapping("/product")
-    public List<ProductResponse> getMyProducts(@RequestHeader("Authorization") String token,
+    public List<ProductResponse> getMyProducts(@RequestHeader(value = "Authorization") String token,
                                                     @RequestParam(defaultValue = "0") int offset,
                                                     @RequestParam(defaultValue = "10") int pageSize) {
         return productService.getMyProducts(token, offset, pageSize);
@@ -72,7 +72,7 @@ public class SellerController {
 //    }
 
     @GetMapping("/product/{sellerId}")
-    public List<ProductResponse> getSellersProducts(@RequestHeader("Authorization") String token,
+    public List<ProductResponse> getSellersProducts(@RequestHeader(value = "Authorization", required = false) String token,
                                                     @PathVariable UUID sellerId,
                                                     @RequestParam(defaultValue = "0") int offset,
                                                     @RequestParam(defaultValue = "10") int pageSize) {
