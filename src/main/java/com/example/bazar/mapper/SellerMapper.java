@@ -1,6 +1,8 @@
 package com.example.bazar.mapper;
 
+import com.example.bazar.model.domain.Address;
 import com.example.bazar.model.domain.Seller;
+import com.example.bazar.model.dto.seller.AddressRequest;
 import com.example.bazar.model.dto.seller.SellerRequest;
 import com.example.bazar.model.dto.seller.SellerResponse;
 
@@ -12,4 +14,6 @@ public interface SellerMapper {
     List<SellerResponse> toResponseList(List<Seller> sellers);
 
     Seller toSeller(Seller seller, SellerRequest request);
+
+    List<Address> toDtoAddresses(List<AddressRequest> addressRequest);
 }

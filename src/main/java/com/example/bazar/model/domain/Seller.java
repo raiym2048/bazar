@@ -17,9 +17,17 @@ public class Seller {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    private String address;
-    private String phoneNumber;
-    private String companyName;
+    private String name;
+
+
+    @Column(nullable = false)
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Address> address;
+
+    @OneToOne
+    private Contact contact;
+
+
 
     private String image;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
