@@ -89,7 +89,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDetailResponse create(ProductRequest request, List<MultipartFile> files, String token) {
+    public ProductResponse create(ProductRequest request, List<MultipartFile> files, String token) {
         Type type = typeRepository.findByName(request.getType()).orElseThrow(() -> new CustomException("Type not found", HttpStatus.NOT_FOUND));
         User user = authService.getUserFromToken(token);
         Seller seller = user.getSeller();
@@ -105,16 +105,16 @@ public class ProductServiceImpl implements ProductService {
         }
         product.setStatus(ProductStatus.WAITING);
         product.setImages(imageDataList);
-        return productMapper.toDetailResponse(productRepository.save(productMapper.toProduct(product, request)));
+        return productMapper.toResponse(productRepository.save(productMapper.toProduct(product, request)), user);
     }
 
     @Override
-    public ProductDetailResponse getDetail(UUID id) {
+    public ProductResponse getDetail(UUID id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
         if (product.getSeller() == null) {
             throw new CustomException("Seller not found", HttpStatus.NOT_FOUND);
         }
-        return productMapper.toDetailResponse(product);
+        return productMapper.toResponse(product, null);
     }
 
     @Override
@@ -150,15 +150,6 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toResponseList(products, user);
     }
 
-    @Override
-    public ProductDetailResponse getSellersProductDetail(String token, UUID productId) {
-        User user = authService.getUserFromToken(token);
-        Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
-        if (user.getSeller().getProducts().contains(product)) {
-            return productMapper.toDetailResponse(product);
-        }
-        throw new CustomException("Product doesn't belong to seller", HttpStatus.BAD_REQUEST);
-    }
 
     @Override
     public List<ProductResponse> getSellersProduct(String token, UUID sellerId, int offset, int pageSize) {

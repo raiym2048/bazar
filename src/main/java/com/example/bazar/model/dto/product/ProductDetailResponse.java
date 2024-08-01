@@ -3,15 +3,27 @@ package com.example.bazar.model.dto.product;
 import lombok.Data;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class ProductDetailResponse {
+    private UUID id;
+
     private String name;
     private double price;
-    private List<String> imagePaths;
     private String description;
-    private String sellerName;
-    private String sellerImagePath;
-    private Integer likes;
-    private Integer favorites;
+
+    private List<String> images;
+
+    private String seller;
+    private int likeCount;
+
+    private int commentCount;
+
+    private int favoriteCount;
+
+    private String status;
+
+    private Boolean liked;
+    private Boolean favorited;
 }
