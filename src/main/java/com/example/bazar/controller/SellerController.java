@@ -49,14 +49,12 @@ public class SellerController {
 
 
     @PostMapping("/create/product")
-    public void create(@RequestPart(value = "request") String request,
+    public void create(@RequestPart(value = "request") ProductRequest request,
                        @RequestPart(value = "files", required = false) List<MultipartFile> files,
-                       @RequestHeader("Authorization") String token) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        ProductRequest productRequest = mapper.readValue(request, ProductRequest.class);
+                       @RequestHeader("Authorization") String token) {
 
         System.out.println("files: " + files.size());
-        productService.create(productRequest, files, token);
+        productService.create(request, files, token);
     }
 
     @GetMapping("/product")

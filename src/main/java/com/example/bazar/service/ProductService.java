@@ -14,7 +14,7 @@ public interface ProductService {
     boolean addFavorite(String token, UUID productId);
     void addComment(String token, UUID productId, String content);
     ProductDetailResponse create(ProductRequest request, List<MultipartFile> files, String token);
-    ProductDetailResponse getDetail(UUID id);
+    ProductDetailResponse getDetail(String token, UUID id);
 
     List<ProductResponse> getAll(int offset, int pageSize, String token);
 

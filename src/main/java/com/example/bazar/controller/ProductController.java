@@ -2,12 +2,10 @@ package com.example.bazar.controller;
 
 import com.example.bazar.model.dto.product.CommentResponse;
 import com.example.bazar.model.dto.product.ProductDetailResponse;
-import com.example.bazar.model.dto.product.ProductRequest;
 import com.example.bazar.model.dto.product.ProductResponse;
 import com.example.bazar.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,7 +26,7 @@ public class ProductController {
         return productService.addFavorite(token, productId);
     }
 
-    @GetMapping("/comment/{productId}")
+    @GetMapping("/leave_comment/{productId}")
     public List<CommentResponse> addComment(@RequestHeader("Authorization") String token, @PathVariable UUID productId, @RequestParam String content) {
         productService.addComment(token, productId, content);
         return productService.getComments(productId, 0, 10);
@@ -36,8 +34,8 @@ public class ProductController {
 
 
     @GetMapping("/detail/{id}")
-    public ProductDetailResponse getDetail(@PathVariable UUID id) {
-        return productService.getDetail(id);
+    public ProductDetailResponse getDetail(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable UUID id) {
+        return productService.getDetail(token, id);
     }
 
     @GetMapping("/all")
