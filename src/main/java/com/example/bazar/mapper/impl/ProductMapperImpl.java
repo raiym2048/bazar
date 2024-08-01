@@ -7,30 +7,29 @@ import com.example.bazar.model.domain.User;
 import com.example.bazar.model.dto.product.ProductDetailResponse;
 import com.example.bazar.model.dto.product.ProductRequest;
 import com.example.bazar.model.dto.product.ProductResponse;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@AllArgsConstructor
 public class ProductMapperImpl implements ProductMapper {
     private final CommentMapper commentMapper;
 
-    public ProductMapperImpl(CommentMapper commentMapper) {
-        this.commentMapper = commentMapper;
-    }
-
     @Override
-    public ProductDetailResponse toDetailResponse(Product product) {
+    public ProductDetailResponse toDetailResponse(Product product, User user) {
         ProductDetailResponse response = new ProductDetailResponse();
-        List<String> imagePaths = product.getImages();
 
+        response.setId(product.getId());
         response.setName(product.getName());
         response.setPrice(product.getPrice());
-        response.setImagePaths(imagePaths);
+        response.setImagePaths(product.getImages());
         response.setDescription(product.getDescription());
         response.setSellerName(product.getSeller().getName());
         response.setSellerImagePath(product.getSeller().getImage());
+        response.setStatus(product.getStatus().name());
 
         if (product.getLikes() != null) {
             response.setLikes(product.getLikes().size());
@@ -41,6 +40,11 @@ public class ProductMapperImpl implements ProductMapper {
             response.setFavorites(product.getFavorites().size());
         } else {
             response.setFavorites(0);
+        }
+
+        if (user != null) {
+            response.setLiked(product.getLikes().contains(user));
+            response.setAddedToFavorites(product.getFavorites().contains(user));
         }
         return response;
     }

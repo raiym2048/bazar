@@ -9,7 +9,7 @@ import com.example.bazar.model.dto.product.ProductResponse;
 import java.util.List;
 
 public interface ProductMapper {
-    ProductDetailResponse toDetailResponse(Product product);
+    ProductDetailResponse toDetailResponse(Product product, User user);
 
     ProductResponse toResponse(Product product, User user);
 

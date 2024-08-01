@@ -9,22 +9,17 @@ import java.util.UUID;
 public class ProductResponse {
 
     private UUID id;
-
     private String name;
-    private double price;
-    private String description;
-
     private List<String> images;
-
     private String seller;
+    private String description;
+    private double price;
     private int likeCount;
 
     private int commentCount;
 
     private int favoriteCount;
-
+    private boolean liked;
+    private boolean favorited;
     private String status;
-
-    private Boolean liked;
-    private Boolean favorited;
 }

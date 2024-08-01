@@ -1,8 +1,6 @@
 package com.example.bazar.service.impl;
 
 import com.example.bazar.exception.CustomException;
-import com.example.bazar.mapper.CommentMapper;
-import com.example.bazar.mapper.FavoriteMapper;
 import com.example.bazar.mapper.ProductMapper;
 import com.example.bazar.model.domain.*;
 import com.example.bazar.model.dto.product.CommentResponse;
@@ -84,6 +82,7 @@ public class ProductServiceImpl implements ProductService {
         Comment comment = new Comment();
         comment.setContent(content);
         comment.setUser(user);
+        comment.setProduct(product);
         comment.setCreatedAt(LocalDateTime.now());
         commentRepository.save(comment);
     }
@@ -105,16 +104,20 @@ public class ProductServiceImpl implements ProductService {
         }
         product.setStatus(ProductStatus.WAITING);
         product.setImages(imageDataList);
-        return productMapper.toDetailResponse(productRepository.save(productMapper.toProduct(product, request)));
+        return productMapper.toDetailResponse(productRepository.save(productMapper.toProduct(product, request)), user);
     }
 
     @Override
-    public ProductDetailResponse getDetail(UUID id) {
+    public ProductDetailResponse getDetail(String token, UUID id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
         if (product.getSeller() == null) {
             throw new CustomException("Seller not found", HttpStatus.NOT_FOUND);
         }
-        return productMapper.toDetailResponse(product);
+        User user = null;
+        if (token != null) {
+            user = authService.getUserFromToken(token);
+        }
+        return productMapper.toDetailResponse(product, user);
     }
 
     @Override
@@ -155,7 +158,7 @@ public class ProductServiceImpl implements ProductService {
         User user = authService.getUserFromToken(token);
         Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException("Product not found", HttpStatus.NOT_FOUND));
         if (user.getSeller().getProducts().contains(product)) {
-            return productMapper.toDetailResponse(product);
+            return productMapper.toDetailResponse(product, user);
         }
         throw new CustomException("Product doesn't belong to seller", HttpStatus.BAD_REQUEST);
     }
