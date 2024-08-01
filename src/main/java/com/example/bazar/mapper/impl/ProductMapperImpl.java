@@ -56,7 +56,7 @@ public class ProductMapperImpl implements ProductMapper {
         response.setStatus(product.getStatus().name());
         response.setFavoriteCount(product.getFavorites().size());
         response.setLikeCount(product.getLikes().size());
-        response.setComments(commentMapper.toDtoS(product.getComments()));
+        response.setCommentCount(product.getComments().size());
         response.setPrice(product.getPrice());
         if (user != null) {
             response.setLiked(product.getLikes().contains(user));
