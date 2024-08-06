@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -124,6 +125,7 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductResponse> getAll(int offset, int pageSize, String token) {
         List<Product> products = productRepository.findAllByStatus(PageRequest.of(offset, pageSize), ProductStatus.ACCEPTED);
         System.out.println("the size:"+products.size());
+        System.out.println("token is: " + token);
         if (token != null) {
             return productMapper.toResponseList(products, authService.getUserFromToken(token));
         }
@@ -170,5 +172,23 @@ public class ProductServiceImpl implements ProductService {
         Seller seller = sellerRepository.findById(sellerId).orElseThrow(() -> new CustomException("Seller not found", HttpStatus.NOT_FOUND));
         System.out.println("Seller id: " + seller.getId());
         return productMapper.toResponseList(productRepository.findAllBySeller(seller, PageRequest.of(offset, pageSize)), user);
+    }
+
+    @Override
+    public List<ProductResponse> waitingProducts(int offset, int pageSize) {
+        List<Product> products = productRepository.findAllByStatus(PageRequest.of(offset, pageSize), ProductStatus.WAITING);
+        System.out.println("the size:"+products.size());
+
+        return productMapper.toResponseList(products, null);    }
+
+    @Override
+    public void setStatus(UUID productId, Boolean accepted) {
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+        if (optionalProduct.isEmpty()){
+            throw new CustomException("product not found", HttpStatus.NOT_FOUND);
+        }
+        Product product = optionalProduct.get();
+        product.setStatus(accepted ? ProductStatus.ACCEPTED : ProductStatus.REJECTED);
+        productRepository.save(product);
     }
 }

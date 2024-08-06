@@ -51,12 +51,17 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse login(LoginRequest loginRequest) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
-                        loginRequest.getPassword()
-                )
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getEmail(),
+                            loginRequest.getPassword()
+                    )
+            );
+        }catch (Exception e){
+            throw new CustomException("Invalid email or password", HttpStatus.BAD_REQUEST);
+        }
+
         return authMapper.toDto(userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new CustomException("User with this email not found", HttpStatus.NOT_FOUND)));
     }
 

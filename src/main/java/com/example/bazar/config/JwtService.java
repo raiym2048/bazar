@@ -6,9 +6,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 
 import java.security.Key;
 import java.util.Date;
@@ -49,7 +51,11 @@ public class JwtService {
     }
 
     public String getUserEmail(String token) {
-        return getAllClaimsFromToken(token).getSubject();
+       try {
+           return getAllClaimsFromToken(token).getSubject();
+       }catch (Exception e){
+           throw new NotFoundException("Token is expired");
+       }
     }
 
     private Key getSignInKey() {

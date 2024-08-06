@@ -24,4 +24,8 @@ public interface ProductService {
     ProductDetailResponse getSellersProductDetail(String token, UUID productId);
 
     List<ProductResponse> getSellersProduct(String token, UUID sellerId, int offset, int pageSize);
+
+    List<ProductResponse> waitingProducts(int offset, int pageSize);
+
+    void setStatus(UUID productId, Boolean accepted);
 }
