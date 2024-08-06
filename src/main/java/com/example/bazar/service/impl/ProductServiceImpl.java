@@ -104,7 +104,7 @@ public class ProductServiceImpl implements ProductService {
         }
         product.setStatus(ProductStatus.WAITING);
         product.setImages(imageDataList);
-        return productMapper.toDetailResponse(productRepository.save(productMapper.toProduct(product, request)), user);
+        return productMapper.toDetailResponse(productRepository.save(productMapper.toProduct(product, request)), null);
     }
 
     @Override
